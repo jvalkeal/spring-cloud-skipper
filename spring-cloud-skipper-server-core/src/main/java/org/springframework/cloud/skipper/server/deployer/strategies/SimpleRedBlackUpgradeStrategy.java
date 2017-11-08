@@ -48,7 +48,7 @@ public class SimpleRedBlackUpgradeStrategy implements UpgradeStrategy {
 	}
 
 	@Override
-	@Async(SKIPPER_EXECUTOR)
+//	@Async(SKIPPER_EXECUTOR)
 	public Release upgrade(Release existingRelease, Release replacingRelease,
 			ReleaseAnalysisReport releaseAnalysisReport) {
 		List<String> applicationNamesToUpgrade = this.deployAppStep.deployApps(existingRelease, replacingRelease,
@@ -59,6 +59,29 @@ public class SimpleRedBlackUpgradeStrategy implements UpgradeStrategy {
 					applicationNamesToUpgrade, replacingRelease);
 		}
 		return replacingRelease;
+	}
+
+	@Override
+	public void deployApps(Release existingRelease, Release replacingRelease, ReleaseAnalysisReport releaseAnalysisReport) {
+		this.deployAppStep.deployApps(existingRelease, replacingRelease, releaseAnalysisReport);
+	}
+
+	@Override
+	public boolean checkStatus(Release replacingRelease) {
+		return this.healthCheckStep.isHealthy(replacingRelease);
+	}
+
+	@Override
+	public void accept(Release existingRelease, Release replacingRelease,
+			ReleaseAnalysisReport releaseAnalysisReport) {
+		this.handleHealthCheckStep.handleHealthCheck(true, existingRelease,
+				releaseAnalysisReport.getApplicationNamesToUpgrade(), replacingRelease);
+	}
+
+	@Override
+	public void cancel(Release existingRelease, Release replacingRelease, ReleaseAnalysisReport releaseAnalysisReport) {
+		this.handleHealthCheckStep.handleHealthCheck(false, existingRelease,
+				releaseAnalysisReport.getApplicationNamesToUpgrade(), replacingRelease);
 	}
 
 }
