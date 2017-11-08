@@ -53,13 +53,17 @@ public class InstallInstallAction extends AbstractAction {
 	@Override
 	protected void executeInternal(StateContext<SkipperStates, SkipperEvents> context) {
 		InstallRequest installRequest = context.getMessageHeaders().get(SkipperEventHeaders.INSTALL_REQUEST, InstallRequest.class);
+		InstallProperties installProperties = context.getMessageHeaders().get(SkipperEventHeaders.INSTALL_PROPERTIES, InstallProperties.class);
 		if (installRequest != null) {
 			Release release = this.releaseService.install(installRequest);
 			context.getExtendedState().getVariables().put(SkipperVariables.RELEASE, release);
-		} else {
-			InstallProperties installProperties = context.getMessageHeaders().get(SkipperEventHeaders.INSTALL_PROPERTIES, InstallProperties.class);
+		} else if (installProperties != null) {
 			Long id = context.getMessageHeaders().get(SkipperEventHeaders.INSTALL_ID, Long.class);
 			Release release = this.releaseService.install(id, installProperties);
+			context.getExtendedState().getVariables().put(SkipperVariables.RELEASE, release);
+		} else {
+			Release replacingRelease = context.getExtendedState().get(SkipperVariables.TARGET_RELEASE, Release.class);
+			Release release = this.releaseService.install(replacingRelease);
 			context.getExtendedState().getVariables().put(SkipperVariables.RELEASE, release);
 		}
 	}

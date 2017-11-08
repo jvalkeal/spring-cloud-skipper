@@ -279,6 +279,11 @@ public class SkipperStateMachineService {
 		INITIAL,
 
 		/**
+		 * Central error handling state.
+		 */
+		ERROR,
+
+		/**
 		 * Central junction where all transitions from main skipper states terminates.
 		 */
 		ERROR_JUNCTION,
@@ -372,7 +377,13 @@ public class SkipperStateMachineService {
 
 		ROLLBACK,
 
-		ROLLBACK_ROLLBACK,
+		ROLLBACK_START,
+
+		ROLLBACK_CHOICE,
+
+		ROLLBACK_EXIT_INSTALL,
+
+		ROLLBACK_EXIT_UPGRADE,
 
 		ROLLBACK_EXIT;
 	}
@@ -443,6 +454,8 @@ public class SkipperStateMachineService {
 		ERROR,
 
 		RELEASE, OPERATION, RELEASE_ANALYSIS_REPORT,
+
+		SOURCE_RELEASE, TARGET_RELEASE,
 
 		UPGRADE_STATUS;
 	}

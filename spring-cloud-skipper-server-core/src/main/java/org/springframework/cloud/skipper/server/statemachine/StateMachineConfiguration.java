@@ -15,12 +15,15 @@
  */
 package org.springframework.cloud.skipper.server.statemachine;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.server.deployer.ReleaseManager;
 import org.springframework.cloud.skipper.server.deployer.strategies.DeployAppStep;
 import org.springframework.cloud.skipper.server.deployer.strategies.HandleHealthCheckStep;
 import org.springframework.cloud.skipper.server.deployer.strategies.HealthCheckStep;
 import org.springframework.cloud.skipper.server.deployer.strategies.UpgradeStrategy;
+import org.springframework.cloud.skipper.server.repository.ReleaseRepository;
 import org.springframework.cloud.skipper.server.service.PackageService;
 import org.springframework.cloud.skipper.server.service.ReleaseReportService;
 import org.springframework.cloud.skipper.server.service.ReleaseService;
@@ -29,6 +32,7 @@ import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachine
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperVariables;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
@@ -53,6 +57,9 @@ public class StateMachineConfiguration {
 	@Configuration
 	public static class SkipperStateMachineFactoryConfig extends StateMachineConfigurerAdapter<SkipperStates, SkipperEvents> {
 
+		private static final Logger log = LoggerFactory
+				.getLogger(StateMachineConfiguration.SkipperStateMachineFactoryConfig.class);
+
 		@Autowired
 		private ReleaseService releaseService;
 
@@ -60,13 +67,16 @@ public class StateMachineConfiguration {
 		private ReleaseReportService releaseReportService;
 
 		@Autowired
-		private DeployAppStep deployAppStep;
+		private ReleaseRepository releaseRepository;
 
-		@Autowired
-		private HealthCheckStep healthCheckStep;
-
-		@Autowired
-		private HandleHealthCheckStep handleHealthCheckStep;
+//		@Autowired
+//		private DeployAppStep deployAppStep;
+//
+//		@Autowired
+//		private HealthCheckStep healthCheckStep;
+//
+//		@Autowired
+//		private HandleHealthCheckStep handleHealthCheckStep;
 
 		@Autowired
 		private UpgradeStrategy upgradeStrategy;
@@ -120,8 +130,11 @@ public class StateMachineConfiguration {
 					.withStates()
 						// substates for rollback
 						.parent(SkipperStates.ROLLBACK)
-						.initial(SkipperStates.ROLLBACK_ROLLBACK)
-						.stateEntry(SkipperStates.ROLLBACK_ROLLBACK, rollbackRollbackAction())
+						.initial(SkipperStates.ROLLBACK_START)
+						.stateEntry(SkipperStates.ROLLBACK_START, rollbackStartAction())
+						.choice(SkipperStates.ROLLBACK_CHOICE)
+						.exit(SkipperStates.ROLLBACK_EXIT_UPGRADE)
+						.exit(SkipperStates.ROLLBACK_EXIT_INSTALL)
 						.exit(SkipperStates.ROLLBACK_EXIT);
 		}
 
@@ -219,10 +232,22 @@ public class StateMachineConfiguration {
 					.event(SkipperEvents.ROLLBACK)
 					.and()
 				.withExternal()
-					.source(SkipperStates.ROLLBACK_ROLLBACK).target(SkipperStates.ROLLBACK_EXIT)
+					.source(SkipperStates.ROLLBACK_START).target(SkipperStates.ROLLBACK_CHOICE)
+					.and()
+				.withChoice()
+					.source(SkipperStates.ROLLBACK_CHOICE)
+					.first(SkipperStates.ROLLBACK_EXIT_UPGRADE, rollbackUpgradeGuard())
+					.then(SkipperStates.ROLLBACK_EXIT_INSTALL, rollbackInstallGuard())
+					.last(SkipperStates.ROLLBACK_EXIT)
 					.and()
 				.withExit()
-					.source(SkipperStates.ROLLBACK_EXIT).target(SkipperStates.ERROR_JUNCTION);
+					.source(SkipperStates.ROLLBACK_EXIT).target(SkipperStates.ERROR_JUNCTION)
+					.and()
+				.withExit()
+					.source(SkipperStates.ROLLBACK_EXIT_UPGRADE).target(SkipperStates.UPGRADE)
+					.and()
+				.withExit()
+					.source(SkipperStates.ROLLBACK_EXIT_INSTALL).target(SkipperStates.INSTALL);
 		}
 
 		@Bean
@@ -247,7 +272,7 @@ public class StateMachineConfiguration {
 
 		@Bean
 		public UpgradeStartAction upgradeStartAction() {
-			return new UpgradeStartAction(releaseReportService);
+			return new UpgradeStartAction(releaseReportService, releaseService);
 		}
 
 		@Bean
@@ -296,8 +321,34 @@ public class StateMachineConfiguration {
 		}
 
 		@Bean
-		public RollbackRollbackAction rollbackRollbackAction() {
-			return new RollbackRollbackAction(releaseService);
+		public RollbackStartAction rollbackStartAction() {
+			return new RollbackStartAction(releaseService, releaseRepository);
+		}
+
+		@Bean
+		public Guard<SkipperStates, SkipperEvents> rollbackInstallGuard() {
+			return context -> {
+				log.info("XXXXXXXXXXXXXXXX 31 ");
+				boolean xxx = context.getExtendedState().getVariables().containsKey(SkipperVariables.TARGET_RELEASE)
+				&& !context.getExtendedState().getVariables().containsKey(SkipperVariables.SOURCE_RELEASE);
+				log.info("XXXXXXXXXXXXXXXX 32 {}", xxx);
+				return xxx;
+//				return context.getExtendedState().getVariables().containsKey(SkipperVariables.TARGET_RELEASE)
+//						&& !context.getExtendedState().getVariables().containsKey(SkipperVariables.SOURCE_RELEASE);
+			};
+		}
+
+		@Bean
+		public Guard<SkipperStates, SkipperEvents> rollbackUpgradeGuard() {
+			return context -> {
+				log.info("XXXXXXXXXXXXXXXX 21 ");
+				boolean xxx = context.getExtendedState().getVariables().containsKey(SkipperVariables.TARGET_RELEASE)
+				&& context.getExtendedState().getVariables().containsKey(SkipperVariables.SOURCE_RELEASE);
+				log.info("XXXXXXXXXXXXXXXX 22 {}", xxx);
+				return xxx;
+//				return context.getExtendedState().getVariables().containsKey(SkipperVariables.TARGET_RELEASE)
+//						&& context.getExtendedState().getVariables().containsKey(SkipperVariables.SOURCE_RELEASE);
+			};
 		}
 	}
 

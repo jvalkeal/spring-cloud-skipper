@@ -33,6 +33,7 @@ import org.springframework.cloud.skipper.server.deployer.strategies.DeployAppSte
 import org.springframework.cloud.skipper.server.deployer.strategies.HandleHealthCheckStep;
 import org.springframework.cloud.skipper.server.deployer.strategies.HealthCheckStep;
 import org.springframework.cloud.skipper.server.deployer.strategies.UpgradeStrategy;
+import org.springframework.cloud.skipper.server.repository.ReleaseRepository;
 import org.springframework.cloud.skipper.server.service.PackageService;
 import org.springframework.cloud.skipper.server.service.ReleaseReportService;
 import org.springframework.cloud.skipper.server.service.ReleaseService;
@@ -100,7 +101,9 @@ public class StateMachineTests {
 	@MockBean
 	private ReleaseService releaseService;
 
-//	@Autowired
+	@MockBean
+	private ReleaseRepository releaseRepository;
+
 	@SpyBean
 	private UpgradeCancelAction upgradeCancelAction;
 
@@ -196,7 +199,7 @@ public class StateMachineTests {
 				.build();
 
 		StateMachineFactory<SkipperStates, SkipperEvents> factory = context.getBean(StateMachineFactory.class);
-		StateMachine<SkipperStates, SkipperEvents> stateMachine = factory.getStateMachine("testSimpleUpgradeShouldNotError");
+		StateMachine<SkipperStates, SkipperEvents> stateMachine = factory.getStateMachine("testUpgradeFailsNewAppFailToDeploy");
 
 		StateMachineTestPlan<SkipperStates, SkipperEvents> plan =
 				StateMachineTestPlanBuilder.<SkipperStates, SkipperEvents>builder()
@@ -215,6 +218,14 @@ public class StateMachineTests {
 		plan.test();
 
 		Mockito.verify(upgradeCancelAction).execute(any());
+	}
+
+	@Test
+	public void testRollbackInstall() throws Exception {
+
+		StateMachineFactory<SkipperStates, SkipperEvents> factory = context.getBean(StateMachineFactory.class);
+		StateMachine<SkipperStates, SkipperEvents> stateMachine = factory.getStateMachine("testRollbackInstall");
+
 	}
 
 
