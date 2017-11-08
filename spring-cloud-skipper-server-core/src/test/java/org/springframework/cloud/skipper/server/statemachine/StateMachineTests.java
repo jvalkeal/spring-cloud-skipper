@@ -46,6 +46,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
+import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.test.StateMachineTestPlan;
 import org.springframework.statemachine.test.StateMachineTestPlanBuilder;
@@ -107,6 +108,9 @@ public class StateMachineTests {
 	@SpyBean
 	private UpgradeCancelAction upgradeCancelAction;
 
+	@SpyBean
+	private ErrorAction errorAction;
+
 	@Test
 	public void testFactory() {
 		StateMachineFactory<SkipperStates, SkipperEvents> factory = context.getBean(StateMachineFactory.class);
@@ -117,7 +121,7 @@ public class StateMachineTests {
 	public void testSimpleInstallShouldNotError() throws Exception {
 		Mockito.when(packageService.downloadPackage(any()))
 				.thenReturn(new org.springframework.cloud.skipper.domain.Package());
-		Mockito.when(releaseManager.install(any())).thenReturn(new Release());
+		Mockito.when(releaseService.install(any(), any())).thenReturn(new Release());
 
 		Message<SkipperEvents> message = MessageBuilder
 			.withPayload(SkipperEvents.INSTALL)
@@ -144,13 +148,15 @@ public class StateMachineTests {
 						.and()
 					.build();
 		plan.test();
+
+		Mockito.verify(errorAction, never()).execute(any());
 	}
 
 	@Test
 	public void testSimpleUpgradeShouldNotError() throws Exception {
 
-		Mockito.when(releaseReportService.createReport(any()))
-				.thenReturn(new ReleaseAnalysisReport(new ArrayList<>(), new ReleaseDifference(true), null, null));
+		Mockito.when(releaseReportService.createReport(any())).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
+				new ReleaseDifference(true), new Release(), new Release()));
 
 		Mockito.when(upgradeStrategy.checkStatus(any()))
 				.thenReturn(true);
@@ -181,12 +187,13 @@ public class StateMachineTests {
 					.build();
 		plan.test();
 		Mockito.verify(upgradeCancelAction, never()).execute(any());
+		Mockito.verify(errorAction, never()).execute(any());
 	}
 
 	@Test
 	public void testUpgradeFailsNewAppFailToDeploy() throws Exception {
-		Mockito.when(releaseReportService.createReport(any()))
-				.thenReturn(new ReleaseAnalysisReport(new ArrayList<>(), new ReleaseDifference(true), null, null));
+		Mockito.when(releaseReportService.createReport(any())).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
+				new ReleaseDifference(true), new Release(), new Release()));
 
 		Mockito.when(upgradeStrategy.checkStatus(any()))
 				.thenReturn(false);
@@ -218,6 +225,7 @@ public class StateMachineTests {
 		plan.test();
 
 		Mockito.verify(upgradeCancelAction).execute(any());
+		Mockito.verify(errorAction, never()).execute(any());
 	}
 
 	@Test

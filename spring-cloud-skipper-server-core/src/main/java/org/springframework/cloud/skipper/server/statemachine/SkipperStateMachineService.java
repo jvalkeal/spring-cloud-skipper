@@ -369,22 +369,52 @@ public class SkipperStateMachineService {
 		 */
 		UPGRADE_EXIT,
 
+		/**
+		 * Parent state of all delete related states.
+		 */
 		DELETE,
 
+		/**
+		 * State where release delete happens.
+		 */
 		DELETE_DELETE,
 
+		/**
+		 * Pseudostate used as a controlled exit point from {@link #DELETE}.
+		 */
 		DELETE_EXIT,
 
+		/**
+		 * Parent state of all rollback related states.
+		 */
 		ROLLBACK,
 
+		/**
+		 * Initialisation state where future branch from {@link #ROLLBACK_CHOICE}
+		 * is desided.
+		 */
 		ROLLBACK_START,
 
+		/**
+		 * Pseudostate makind decision between exit points {@link #ROLLBACK_EXIT},
+		 * {@link #ROLLBACK_EXIT_INSTALL} and {@link #ROLLBACK_EXIT_UPGRADE}.
+		 */
 		ROLLBACK_CHOICE,
 
+		/**
+		 * Controlled exit into {@link #INSTALL}.
+		 */
 		ROLLBACK_EXIT_INSTALL,
 
+		/**
+		 * Controlled exit into {@link #UPGRADE}.
+		 */
 		ROLLBACK_EXIT_UPGRADE,
 
+		/**
+		 * Controlled exit which acts as a fallback in case either {@link #ROLLBACK_EXIT_INSTALL}
+		 * or {@link #ROLLBACK_EXIT_UPGRADE} cannot be chosen for some reason.
+		 */
 		ROLLBACK_EXIT;
 	}
 
@@ -421,6 +451,9 @@ public class SkipperStateMachineService {
 		 */
 		UPGRADE_ACCEPT,
 
+		/**
+		 * Main level event instructing a rollback request.
+		 */
 		ROLLBACK;
 	}
 

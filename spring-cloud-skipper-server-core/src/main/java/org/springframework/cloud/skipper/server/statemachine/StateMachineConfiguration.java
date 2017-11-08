@@ -87,6 +87,7 @@ public class StateMachineConfiguration {
 				.withStates()
 					// define main states
 					.initial(SkipperStates.INITIAL)
+					.stateEntry(SkipperStates.ERROR, errorAction())
 					// clear memory for stored variables
 					.stateExit(SkipperStates.INITIAL, resetVariablesAction())
 					.state(SkipperStates.INSTALL)
@@ -145,7 +146,11 @@ public class StateMachineConfiguration {
 				// transitions around error handling outside of main skipper states
 				.withJunction()
 					.source(SkipperStates.ERROR_JUNCTION)
+					.first(SkipperStates.ERROR, errorGuard())
 					.last(SkipperStates.INITIAL)
+					.and()
+				.withExternal()
+					.source(SkipperStates.ERROR).target(SkipperStates.INITIAL)
 					.and()
 
 				// install transitions
@@ -261,6 +266,11 @@ public class StateMachineConfiguration {
 		}
 
 		@Bean
+		public ErrorAction errorAction() {
+			return new ErrorAction();
+		}
+
+		@Bean
 		public InstallInstallAction installInstallAction() {
 			return new InstallInstallAction(releaseService);
 		}
@@ -328,26 +338,16 @@ public class StateMachineConfiguration {
 		@Bean
 		public Guard<SkipperStates, SkipperEvents> rollbackInstallGuard() {
 			return context -> {
-				log.info("XXXXXXXXXXXXXXXX 31 ");
-				boolean xxx = context.getExtendedState().getVariables().containsKey(SkipperVariables.TARGET_RELEASE)
-				&& !context.getExtendedState().getVariables().containsKey(SkipperVariables.SOURCE_RELEASE);
-				log.info("XXXXXXXXXXXXXXXX 32 {}", xxx);
-				return xxx;
-//				return context.getExtendedState().getVariables().containsKey(SkipperVariables.TARGET_RELEASE)
-//						&& !context.getExtendedState().getVariables().containsKey(SkipperVariables.SOURCE_RELEASE);
+				return context.getExtendedState().getVariables().containsKey(SkipperVariables.TARGET_RELEASE)
+						&& !context.getExtendedState().getVariables().containsKey(SkipperVariables.SOURCE_RELEASE);
 			};
 		}
 
 		@Bean
 		public Guard<SkipperStates, SkipperEvents> rollbackUpgradeGuard() {
 			return context -> {
-				log.info("XXXXXXXXXXXXXXXX 21 ");
-				boolean xxx = context.getExtendedState().getVariables().containsKey(SkipperVariables.TARGET_RELEASE)
-				&& context.getExtendedState().getVariables().containsKey(SkipperVariables.SOURCE_RELEASE);
-				log.info("XXXXXXXXXXXXXXXX 22 {}", xxx);
-				return xxx;
-//				return context.getExtendedState().getVariables().containsKey(SkipperVariables.TARGET_RELEASE)
-//						&& context.getExtendedState().getVariables().containsKey(SkipperVariables.SOURCE_RELEASE);
+				return context.getExtendedState().getVariables().containsKey(SkipperVariables.TARGET_RELEASE)
+						&& context.getExtendedState().getVariables().containsKey(SkipperVariables.SOURCE_RELEASE);
 			};
 		}
 	}
