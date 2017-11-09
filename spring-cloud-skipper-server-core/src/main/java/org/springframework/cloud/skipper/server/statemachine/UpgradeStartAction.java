@@ -17,14 +17,14 @@ package org.springframework.cloud.skipper.server.statemachine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.domain.UpgradeRequest;
 import org.springframework.cloud.skipper.server.deployer.ReleaseAnalysisReport;
-import org.springframework.cloud.skipper.server.repository.ReleaseRepository;
 import org.springframework.cloud.skipper.server.service.ReleaseReportService;
 import org.springframework.cloud.skipper.server.service.ReleaseService;
-import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperEvents;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperEventHeaders;
+import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperEvents;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperStates;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperVariables;
 import org.springframework.statemachine.StateContext;
@@ -32,6 +32,7 @@ import org.springframework.statemachine.StateContext;
 public class UpgradeStartAction extends AbstractAction {
 
 	private static final Logger log = LoggerFactory.getLogger(UpgradeStartAction.class);
+	private static final long DEFAULT_UPGRADE_TIMEOUT = 60000l;
 	private final ReleaseReportService releaseReportService;
 	private final ReleaseService releaseService;
 
@@ -43,6 +44,8 @@ public class UpgradeStartAction extends AbstractAction {
 
 	@Override
 	protected void executeInternal(StateContext<SkipperStates, SkipperEvents> context) {
+		setUpgradeCutOffTime(context);
+
 		UpgradeRequest upgradeRequest = context.getMessageHeaders().get(SkipperEventHeaders.UPGRADE_REQUEST, UpgradeRequest.class);
 		log.info("upgradeRequest {}", upgradeRequest);
 		if (upgradeRequest != null) {
@@ -55,5 +58,16 @@ public class UpgradeStartAction extends AbstractAction {
 			ReleaseAnalysisReport releaseAnalysisReport = releaseService.createReport(existingRelease, replacingRelease);
 			context.getExtendedState().getVariables().put(SkipperVariables.RELEASE_ANALYSIS_REPORT, releaseAnalysisReport);
 		}
+	}
+
+	private void setUpgradeCutOffTime(StateContext<SkipperStates, SkipperEvents> context) {
+		Long upgradeTimeout = context.getMessageHeaders().get(SkipperEventHeaders.UPGRADE_TIMEOUT, Long.class);
+		if (upgradeTimeout == null) {
+			upgradeTimeout = DEFAULT_UPGRADE_TIMEOUT;
+		}
+		long cutOffTime = System.currentTimeMillis() + upgradeTimeout;
+		context.getExtendedState().getVariables().put(SkipperVariables.UPGRADE_CUTOFF_TIME,
+				cutOffTime);
+		log.debug("Set cutoff time as {}", cutOffTime);
 	}
 }

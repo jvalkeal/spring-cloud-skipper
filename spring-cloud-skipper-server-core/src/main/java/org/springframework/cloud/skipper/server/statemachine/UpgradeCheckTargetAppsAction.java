@@ -15,6 +15,9 @@
  */
 package org.springframework.cloud.skipper.server.statemachine;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.cloud.skipper.server.deployer.ReleaseAnalysisReport;
 import org.springframework.cloud.skipper.server.deployer.strategies.UpgradeStrategy;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperEvents;
@@ -24,6 +27,7 @@ import org.springframework.statemachine.StateContext;
 
 public class UpgradeCheckTargetAppsAction extends AbstractAction {
 
+	private static final Logger log = LoggerFactory.getLogger(UpgradeCheckTargetAppsAction.class);
 	private final UpgradeStrategy upgradeStrategy;
 
 	public UpgradeCheckTargetAppsAction(UpgradeStrategy upgradeStrategy) {
@@ -35,14 +39,22 @@ public class UpgradeCheckTargetAppsAction extends AbstractAction {
 	protected void executeInternal(StateContext<SkipperStates, SkipperEvents> context) {
 		ReleaseAnalysisReport releaseAnalysisReport = context.getExtendedState().get(SkipperVariables.RELEASE_ANALYSIS_REPORT,
 				ReleaseAnalysisReport.class);
-
+		int upgradeStatus = 0;
 		boolean ok = upgradeStrategy.checkStatus(releaseAnalysisReport.getReplacingRelease());
+		log.debug("upgradeStrategy checkStatus {}", ok);
+		if (ok) {
+			upgradeStatus = 1;
+		} else if (!ok && cutOffTimeExceed(context)) {
+			upgradeStatus = -1;
+		}
+		log.debug("Setting upgradeStatus {}", upgradeStatus);
+		context.getExtendedState().getVariables().put(SkipperVariables.UPGRADE_STATUS, upgradeStatus);
+	}
 
-		context.getExtendedState().getVariables().put(SkipperVariables.UPGRADE_STATUS, ok);
-//		if (ok) {
-//			context.getExtendedState().getVariables().put(SkipperVariables.UPGRADE_STATUS, true);
-//		}
-
-
+	private boolean cutOffTimeExceed(StateContext<SkipperStates, SkipperEvents> context) {
+		long now = System.currentTimeMillis();
+		Long cutOffTime = context.getExtendedState().get(SkipperVariables.UPGRADE_CUTOFF_TIME, Long.class);
+		log.debug("Testing cutOffTime {} to now {}", cutOffTime, now);
+		return now > cutOffTime;
 	}
 }

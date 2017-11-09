@@ -200,9 +200,11 @@ public class StateMachineTests {
 
 		UpgradeRequest upgradeRequest = new UpgradeRequest();
 
+		// timeout 0 for things to fail immediately
 		Message<SkipperEvents> message1 = MessageBuilder
 				.withPayload(SkipperEvents.UPGRADE)
 				.setHeader(SkipperEventHeaders.UPGRADE_REQUEST, upgradeRequest)
+				.setHeader(SkipperEventHeaders.UPGRADE_TIMEOUT, 0l)
 				.build();
 
 		StateMachineFactory<SkipperStates, SkipperEvents> factory = context.getBean(StateMachineFactory.class);
@@ -282,6 +284,50 @@ public class StateMachineTests {
 		plan.test();
 
 		Mockito.verify(errorAction, never()).execute(any());
+	}
+
+	@Test
+	public void testInstallDeniedWhileUpgrading() throws Exception {
+		Mockito.when(releaseReportService.createReport(any())).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
+				new ReleaseDifference(true), new Release(), new Release()));
+		Mockito.when(upgradeStrategy.checkStatus(any()))
+				.thenReturn(false);
+
+		UpgradeRequest upgradeRequest = new UpgradeRequest();
+
+		Message<SkipperEvents> message1 = MessageBuilder
+				.withPayload(SkipperEvents.UPGRADE)
+				.setHeader(SkipperEventHeaders.UPGRADE_REQUEST, upgradeRequest)
+				.build();
+
+		Message<SkipperEvents> message2 = MessageBuilder
+				.withPayload(SkipperEvents.INSTALL)
+				.setHeader(SkipperEventHeaders.PACKAGE_METADATA, new PackageMetadata())
+				.setHeader(SkipperEventHeaders.INSTALL_PROPERTIES, new InstallProperties())
+				.setHeader(SkipperEventHeaders.VERSION, 1)
+				.build();
+
+		StateMachineFactory<SkipperStates, SkipperEvents> factory = context.getBean(StateMachineFactory.class);
+		StateMachine<SkipperStates, SkipperEvents> stateMachine = factory.getStateMachine("testInstallDeniedWhileUpgrading");
+
+		StateMachineTestPlan<SkipperStates, SkipperEvents> plan =
+				StateMachineTestPlanBuilder.<SkipperStates, SkipperEvents>builder()
+					.defaultAwaitTime(10)
+					.stateMachine(stateMachine)
+					.step()
+						.expectStateMachineStarted(1)
+						.expectStates(SkipperStates.INITIAL)
+						.and()
+					.step()
+						.sendEvent(message1)
+						.expectStateChanged(6)
+						.and()
+					.build();
+		plan.test();
+
+		// install event is not accepted
+		boolean accepted = stateMachine.sendEvent(message2);
+		assertThat(accepted).isFalse();
 	}
 
 	@Import(StateMachineConfiguration.class)

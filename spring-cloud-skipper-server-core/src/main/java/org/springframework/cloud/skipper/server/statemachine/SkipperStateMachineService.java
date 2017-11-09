@@ -158,7 +158,7 @@ public class SkipperStateMachineService {
 			}
 		}
 		else {
-			throw new SkipperException("Statemachine is not in state ready to do install");
+			throw new SkipperException("Statemachine is not in state ready to do upgrade");
 		}
 	}
 
@@ -205,7 +205,7 @@ public class SkipperStateMachineService {
 			}
 		}
 		else {
-			throw new SkipperException("Statemachine is not in state ready to do install");
+			throw new SkipperException("Statemachine is not in state ready to do delete");
 		}
 	}
 
@@ -471,6 +471,7 @@ public class SkipperStateMachineService {
 		public static final String INSTALL_PROPERTIES = "INSTALL_PROPERTIES";
 		public static final String INSTALL_REQUEST = "INSTALL_REQUEST";
 		public static final String UPGRADE_REQUEST = "UPGRADE_REQUEST";
+		public static final String UPGRADE_TIMEOUT = "UPGRADE_TIMEOUT";
 		public static final String RELEASE_NAME = "RELEASE_NAME";
 		public static final String ROLLBACK_VERSION = "ROLLBACK_VERSION";
 	}
@@ -489,6 +490,8 @@ public class SkipperStateMachineService {
 		RELEASE, OPERATION, RELEASE_ANALYSIS_REPORT,
 
 		SOURCE_RELEASE, TARGET_RELEASE,
+
+		UPGRADE_CUTOFF_TIME,
 
 		UPGRADE_STATUS;
 	}
