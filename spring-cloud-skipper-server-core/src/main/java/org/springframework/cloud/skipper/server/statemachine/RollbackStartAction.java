@@ -44,11 +44,8 @@ public class RollbackStartAction  extends AbstractAction {
 
 	@Override
 	protected void executeInternal(StateContext<SkipperStates, SkipperEvents> context) {
-		log.info("XXXXXXXXXXXXXXXX 11");
 		String releaseName = context.getMessageHeaders().get(SkipperEventHeaders.RELEASE_NAME, String.class);
 		Integer rollbackVersion = context.getMessageHeaders().get(SkipperEventHeaders.ROLLBACK_VERSION, Integer.class);
-//		Release release = releaseService.rollback(releaseName, rollbackVersion);
-//		context.getExtendedState().getVariables().put(SkipperVariables.RELEASE, release);
 
 
 		Assert.notNull(releaseName, "Release name must not be null");
@@ -90,9 +87,7 @@ public class RollbackStartAction  extends AbstractAction {
 
 		if (!currentRelease.getInfo().getStatus().getStatusCode().equals(StatusCode.DELETED)) {
 			context.getExtendedState().getVariables().put(SkipperVariables.SOURCE_RELEASE, currentRelease);
-			log.info("XXXXXXXXXXXXXXXX 12");
 		}
-		log.info("XXXXXXXXXXXXXXXX 13");
 	}
 
 }

@@ -15,16 +15,9 @@
  */
 package org.springframework.cloud.skipper.server.statemachine;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.skipper.server.deployer.ReleaseManager;
-import org.springframework.cloud.skipper.server.deployer.strategies.DeployAppStep;
-import org.springframework.cloud.skipper.server.deployer.strategies.HandleHealthCheckStep;
-import org.springframework.cloud.skipper.server.deployer.strategies.HealthCheckStep;
 import org.springframework.cloud.skipper.server.deployer.strategies.UpgradeStrategy;
 import org.springframework.cloud.skipper.server.repository.ReleaseRepository;
-import org.springframework.cloud.skipper.server.service.PackageService;
 import org.springframework.cloud.skipper.server.service.ReleaseReportService;
 import org.springframework.cloud.skipper.server.service.ReleaseService;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperEvents;
@@ -32,8 +25,6 @@ import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachine
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperVariables;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.statemachine.StateContext;
-import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.StateMachineFactory;
@@ -57,9 +48,6 @@ public class StateMachineConfiguration {
 	@Configuration
 	public static class SkipperStateMachineFactoryConfig extends StateMachineConfigurerAdapter<SkipperStates, SkipperEvents> {
 
-		private static final Logger log = LoggerFactory
-				.getLogger(StateMachineConfiguration.SkipperStateMachineFactoryConfig.class);
-
 		@Autowired
 		private ReleaseService releaseService;
 
@@ -68,15 +56,6 @@ public class StateMachineConfiguration {
 
 		@Autowired
 		private ReleaseRepository releaseRepository;
-
-//		@Autowired
-//		private DeployAppStep deployAppStep;
-//
-//		@Autowired
-//		private HealthCheckStep healthCheckStep;
-//
-//		@Autowired
-//		private HandleHealthCheckStep handleHealthCheckStep;
 
 		@Autowired
 		private UpgradeStrategy upgradeStrategy;

@@ -22,9 +22,12 @@ import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.cloud.skipper.domain.Info;
 import org.springframework.cloud.skipper.domain.InstallProperties;
 import org.springframework.cloud.skipper.domain.PackageMetadata;
 import org.springframework.cloud.skipper.domain.Release;
+import org.springframework.cloud.skipper.domain.Status;
+import org.springframework.cloud.skipper.domain.StatusCode;
 import org.springframework.cloud.skipper.domain.UpgradeRequest;
 import org.springframework.cloud.skipper.server.deployer.ReleaseAnalysisReport;
 import org.springframework.cloud.skipper.server.deployer.ReleaseDifference;
@@ -154,10 +157,8 @@ public class StateMachineTests {
 
 	@Test
 	public void testSimpleUpgradeShouldNotError() throws Exception {
-
 		Mockito.when(releaseReportService.createReport(any())).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
 				new ReleaseDifference(true), new Release(), new Release()));
-
 		Mockito.when(upgradeStrategy.checkStatus(any()))
 				.thenReturn(true);
 
@@ -194,7 +195,6 @@ public class StateMachineTests {
 	public void testUpgradeFailsNewAppFailToDeploy() throws Exception {
 		Mockito.when(releaseReportService.createReport(any())).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
 				new ReleaseDifference(true), new Release(), new Release()));
-
 		Mockito.when(upgradeStrategy.checkStatus(any()))
 				.thenReturn(false);
 
@@ -220,6 +220,15 @@ public class StateMachineTests {
 						.sendEvent(message1)
 						.expectStates(SkipperStates.INITIAL)
 						.expectStateChanged(9)
+						.expectStateEntered(SkipperStates.UPGRADE,
+								SkipperStates.UPGRADE_START,
+								SkipperStates.UPGRADE_DEPLOY_TARGET_APPS,
+								SkipperStates.UPGRADE_WAIT_TARGET_APPS,
+								SkipperStates.UPGRADE_CHECK_TARGET_APPS,
+								SkipperStates.UPGRADE_WAIT_TARGET_APPS,
+								SkipperStates.UPGRADE_DEPLOY_TARGET_APPS_FAILED,
+								SkipperStates.UPGRADE_CANCEL,
+								SkipperStates.INITIAL)
 						.and()
 					.build();
 		plan.test();
@@ -230,12 +239,50 @@ public class StateMachineTests {
 
 	@Test
 	public void testRollbackInstall() throws Exception {
+		Release release = new Release();
+		Status status = new Status();
+		status.setStatusCode(StatusCode.DELETED);
+		Info info = Info.createNewInfo("xxx");
+		info.setStatus(status);
+		release.setInfo(info);
+		Mockito.when(releaseRepository.findLatestReleaseForUpdate(any())).thenReturn(release);
+		Mockito.when(releaseRepository.findReleaseToRollback(any())).thenReturn(release);
+		Mockito.when(releaseService.install(any(Release.class))).thenReturn(release);
+
+
+		Message<SkipperEvents> message1 = MessageBuilder
+				.withPayload(SkipperEvents.ROLLBACK)
+				.setHeader(SkipperEventHeaders.RELEASE_NAME, "testRollbackInstall")
+				.setHeader(SkipperEventHeaders.ROLLBACK_VERSION, 0)
+				.build();
 
 		StateMachineFactory<SkipperStates, SkipperEvents> factory = context.getBean(StateMachineFactory.class);
 		StateMachine<SkipperStates, SkipperEvents> stateMachine = factory.getStateMachine("testRollbackInstall");
 
-	}
+		StateMachineTestPlan<SkipperStates, SkipperEvents> plan =
+				StateMachineTestPlanBuilder.<SkipperStates, SkipperEvents>builder()
+					.defaultAwaitTime(10)
+					.stateMachine(stateMachine)
+					.step()
+						.expectStateMachineStarted(1)
+						.expectStates(SkipperStates.INITIAL)
+						.and()
+					.step()
+						.sendEvent(message1)
+						.expectStates(SkipperStates.INITIAL)
+						.expectStateChanged(6)
+						.expectStateEntered(SkipperStates.ROLLBACK,
+								SkipperStates.ROLLBACK_START,
+								SkipperStates.INSTALL,
+								SkipperStates.INSTALL_PREPARE,
+								SkipperStates.INSTALL_INSTALL,
+								SkipperStates.INITIAL)
+						.and()
+					.build();
+		plan.test();
 
+		Mockito.verify(errorAction, never()).execute(any());
+	}
 
 	@Import(StateMachineConfiguration.class)
 	static class TestConfig {
