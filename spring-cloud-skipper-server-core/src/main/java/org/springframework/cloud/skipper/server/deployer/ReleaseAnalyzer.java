@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.cloud.skipper.SkipperException;
-import org.springframework.cloud.skipper.domain.Release;
+import org.springframework.cloud.skipper.domain.SkipperRelease;
 import org.springframework.cloud.skipper.server.domain.SpringBootAppKind;
 import org.springframework.cloud.skipper.server.domain.SpringBootAppKindReader;
 import org.springframework.util.StringUtils;
@@ -55,7 +55,7 @@ public class ReleaseAnalyzer {
 	 * existing release.
 	 * @return an analysis report describing the changes to make, if any.
 	 */
-	public ReleaseAnalysisReport analyze(Release existingRelease, Release replacingRelease) {
+	public ReleaseAnalysisReport analyze(SkipperRelease existingRelease, SkipperRelease replacingRelease) {
 
 		// For now, assume single package with no deps or package with same number of deps
 		List<SpringBootAppKind> existingSpringBootAppKindList = SpringBootAppKindReader
@@ -89,7 +89,7 @@ public class ReleaseAnalyzer {
 
 	private ReleaseAnalysisReport analyzeDependentPackagesOnly(List<SpringBootAppKind> existingSpringBootAppKindList,
 			List<SpringBootAppKind> replacingSpringBootAppKindList,
-			Release existingRelease, Release replacingRelease) {
+			SkipperRelease existingRelease, SkipperRelease replacingRelease) {
 		List<String> appsToDelete = new ArrayList<>();
 		StringBuilder diffMessagesBuilder = new StringBuilder();
 		for (SpringBootAppKind existingSpringBootAppKind : existingSpringBootAppKindList) {
@@ -115,7 +115,7 @@ public class ReleaseAnalyzer {
 
 	private ReleaseAnalysisReport analyzeTopLevelPackagesOnly(List<SpringBootAppKind> existingSpringBootAppKindList,
 			List<SpringBootAppKind> replacingSpringBootAppKindList,
-			Release existingRelease, Release replacingRelease) {
+			SkipperRelease existingRelease, SkipperRelease replacingRelease) {
 		ReleaseDifference difference = compare(existingSpringBootAppKindList.get(0),
 				replacingSpringBootAppKindList.get(0));
 		List<String> appsToDelete = new ArrayList<>();

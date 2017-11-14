@@ -22,12 +22,12 @@ import java.util.Map;
 
 import org.springframework.cloud.deployer.spi.app.AppDeployer;
 import org.springframework.cloud.deployer.spi.core.AppDeploymentRequest;
-import org.springframework.cloud.skipper.domain.Release;
-import org.springframework.cloud.skipper.domain.Status;
+import org.springframework.cloud.skipper.domain.SkipperRelease;
+import org.springframework.cloud.skipper.domain.SkipperStatus;
 import org.springframework.cloud.skipper.domain.StatusCode;
 import org.springframework.cloud.skipper.server.deployer.AppDeploymentRequestFactory;
 import org.springframework.cloud.skipper.server.deployer.ReleaseAnalysisReport;
-import org.springframework.cloud.skipper.server.domain.AppDeployerData;
+import org.springframework.cloud.skipper.server.domain.SkipperAppDeployerData;
 import org.springframework.cloud.skipper.server.domain.SpringBootAppKind;
 import org.springframework.cloud.skipper.server.domain.SpringBootAppKindReader;
 import org.springframework.cloud.skipper.server.repository.AppDeployerDataRepository;
@@ -61,7 +61,7 @@ public class DeployAppStep {
 	}
 
 	@Transactional
-	public List<String> deployApps(Release existingRelease, Release replacingRelease,
+	public List<String> deployApps(SkipperRelease existingRelease, SkipperRelease replacingRelease,
 			ReleaseAnalysisReport releaseAnalysisReport) {
 		List<String> applicationNamesToUpgrade = new ArrayList<>();
 		try {
@@ -76,7 +76,7 @@ public class DeployAppStep {
 			// Carry over the applicationDeployment information for apps that were not updated.
 			carryOverAppDeploymentIds(existingRelease, appNameDeploymentIdMap);
 
-			AppDeployerData appDeployerData = new AppDeployerData();
+			SkipperAppDeployerData appDeployerData = new SkipperAppDeployerData();
 			appDeployerData.setReleaseName(replacingRelease.getName());
 			appDeployerData.setReleaseVersion(replacingRelease.getVersion());
 			appDeployerData.setDeploymentDataUsingMap(appNameDeploymentIdMap);
@@ -86,7 +86,7 @@ public class DeployAppStep {
 			throw e;
 		}
 		catch (Exception e) {
-			Status status = new Status();
+			SkipperStatus status = new SkipperStatus();
 			status.setStatusCode(StatusCode.FAILED);
 			replacingRelease.getInfo().setStatus(status);
 			replacingRelease.getInfo().setStatus(status);
@@ -97,8 +97,8 @@ public class DeployAppStep {
 		return applicationNamesToUpgrade;
 	}
 
-	private void carryOverAppDeploymentIds(Release existingRelease, Map<String, String> appNameDeploymentIdMap) {
-		AppDeployerData existingAppDeployerData = this.appDeployerDataRepository
+	private void carryOverAppDeploymentIds(SkipperRelease existingRelease, Map<String, String> appNameDeploymentIdMap) {
+		SkipperAppDeployerData existingAppDeployerData = this.appDeployerDataRepository
 				.findByReleaseNameAndReleaseVersionRequired(
 						existingRelease.getName(), existingRelease.getVersion());
 		Map<String, String> existingAppNamesAndDeploymentIds = existingAppDeployerData.getDeploymentDataAsMap();
@@ -111,7 +111,7 @@ public class DeployAppStep {
 		}
 	}
 
-	private Map<String, String> deploy(Release replacingRelease, List<String> applicationNamesToUpgrade,
+	private Map<String, String> deploy(SkipperRelease replacingRelease, List<String> applicationNamesToUpgrade,
 			AppDeployer appDeployer) {
 		List<SpringBootAppKind> springBootAppKindList = SpringBootAppKindReader
 				.read(replacingRelease.getManifest());

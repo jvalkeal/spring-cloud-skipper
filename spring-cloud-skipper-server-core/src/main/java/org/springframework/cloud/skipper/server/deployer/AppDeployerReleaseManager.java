@@ -31,11 +31,11 @@ import org.springframework.cloud.deployer.spi.app.MultiStateAppDeployer;
 import org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeploymentProperties;
 import org.springframework.cloud.deployer.spi.core.AppDeploymentRequest;
 import org.springframework.cloud.skipper.SkipperException;
-import org.springframework.cloud.skipper.domain.Release;
-import org.springframework.cloud.skipper.domain.Status;
+import org.springframework.cloud.skipper.domain.SkipperRelease;
+import org.springframework.cloud.skipper.domain.SkipperStatus;
 import org.springframework.cloud.skipper.domain.StatusCode;
 import org.springframework.cloud.skipper.server.deployer.strategies.UpgradeStrategy;
-import org.springframework.cloud.skipper.server.domain.AppDeployerData;
+import org.springframework.cloud.skipper.server.domain.SkipperAppDeployerData;
 import org.springframework.cloud.skipper.server.domain.SpringBootAppKind;
 import org.springframework.cloud.skipper.server.domain.SpringBootAppKindReader;
 import org.springframework.cloud.skipper.server.domain.SpringBootAppSpec;
@@ -84,9 +84,9 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 		this.upgradeStrategy = updateStrategy;
 	}
 
-	public Release install(Release releaseInput) {
+	public SkipperRelease install(SkipperRelease releaseInput) {
 		validate(releaseInput);
-		Release release = this.releaseRepository.save(releaseInput);
+		SkipperRelease release = this.releaseRepository.save(releaseInput);
 		logger.debug("Manifest = " + releaseInput.getManifest());
 		// Deploy the application
 		List<SpringBootAppKind> springBootAppKindList = SpringBootAppKindReader.read(release.getManifest());
@@ -104,7 +104,7 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 			}
 			catch (Exception e) {
 				// Update Status in DB
-				Status status = new Status();
+				SkipperStatus status = new SkipperStatus();
 				status.setStatusCode(StatusCode.FAILED);
 				release.getInfo().setStatus(status);
 				release.getInfo().setDescription("Install failed");
@@ -116,7 +116,7 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 			}
 		}
 
-		AppDeployerData appDeployerData = new AppDeployerData();
+		SkipperAppDeployerData appDeployerData = new SkipperAppDeployerData();
 		appDeployerData.setReleaseName(release.getName());
 		appDeployerData.setReleaseVersion(release.getVersion());
 		appDeployerData.setDeploymentDataUsingMap(appNameDeploymentIdMap);
@@ -124,7 +124,7 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 		this.appDeployerDataRepository.save(appDeployerData);
 
 		// Update Status in DB
-		Status status = new Status();
+		SkipperStatus status = new SkipperStatus();
 		status.setStatusCode(StatusCode.DEPLOYED);
 		release.getInfo().setStatus(status);
 		release.getInfo().setDescription("Install complete");
@@ -133,7 +133,7 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 		return status(this.releaseRepository.save(release));
 	}
 
-	private void validate(Release releaseInput) {
+	private void validate(SkipperRelease releaseInput) {
 		/**
 		 * Do some AppDeployer specific checks. These should be pushed down into the
 		 * implementations to fail fast.
@@ -163,13 +163,13 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 	}
 
 	@Override
-	public ReleaseAnalysisReport createReport(Release existingRelease, Release replacingRelease) {
+	public ReleaseAnalysisReport createReport(SkipperRelease existingRelease, SkipperRelease replacingRelease) {
 		ReleaseAnalysisReport releaseAnalysisReport = this.releaseAnalyzer.analyze(existingRelease, replacingRelease);
 		if (releaseAnalysisReport.getReleaseDifference().areEqual()) {
 			throw new SkipperException(
 					"Package to upgrade has no difference than existing deployed/deleted package. Not upgrading.");
 		}
-		AppDeployerData existingAppDeployerData = this.appDeployerDataRepository
+		SkipperAppDeployerData existingAppDeployerData = this.appDeployerDataRepository
 				.findByReleaseNameAndReleaseVersionRequired(
 						existingRelease.getName(), existingRelease.getVersion());
 		Map<String, String> existingAppNamesAndDeploymentIds = existingAppDeployerData.getDeploymentDataAsMap();
@@ -195,7 +195,7 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 				releaseAnalysisReport.getReplacingRelease(), releaseAnalysisReport);
 	}
 
-	private Map<String, Object> calculateAppCountsForRelease(Release replacingRelease,
+	private Map<String, Object> calculateAppCountsForRelease(SkipperRelease replacingRelease,
 			Map<String, String> existingAppNamesAndDeploymentIds, List<String> applicationNamesToUpgrade,
 			List<AppStatus> appStatuses) {
 		Map<String, Object> model = ConfigValueUtils.mergeConfigValues(replacingRelease.getPkg(),
@@ -242,10 +242,10 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 		deploymentPropertiesMap.put(SPRING_CLOUD_DEPLOYER_COUNT, appsCount);
 	}
 
-	public Release status(Release release) {
+	public SkipperRelease status(SkipperRelease release) {
 		AppDeployer appDeployer = this.deployerRepository.findByNameRequired(release.getPlatformName())
 				.getAppDeployer();
-		AppDeployerData appDeployerData = this.appDeployerDataRepository
+		SkipperAppDeployerData appDeployerData = this.appDeployerDataRepository
 				.findByReleaseNameAndReleaseVersion(release.getName(), release.getVersion());
 		if (appDeployerData == null) {
 			logger.warn(String.format("Could not get status for release %s-v%s.  No app deployer data found.",
@@ -301,18 +301,18 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 		return release;
 	}
 
-	public Release delete(Release release) {
+	public SkipperRelease delete(SkipperRelease release) {
 		AppDeployer appDeployer = this.deployerRepository.findByNameRequired(release.getPlatformName())
 				.getAppDeployer();
 
-		AppDeployerData appDeployerData = this.appDeployerDataRepository
+		SkipperAppDeployerData appDeployerData = this.appDeployerDataRepository
 				.findByReleaseNameAndReleaseVersionRequired(release.getName(), release.getVersion());
 		List<String> deploymentIds = appDeployerData.getDeploymentIds();
 		if (!deploymentIds.isEmpty()) {
 			for (String deploymentId : deploymentIds) {
 				appDeployer.undeploy(deploymentId);
 			}
-			Status deletedStatus = new Status();
+			SkipperStatus deletedStatus = new SkipperStatus();
 			deletedStatus.setStatusCode(StatusCode.DELETED);
 			release.getInfo().setStatus(deletedStatus);
 			release.getInfo().setDescription("Delete complete");

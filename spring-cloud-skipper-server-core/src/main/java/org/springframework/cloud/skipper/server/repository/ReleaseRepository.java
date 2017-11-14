@@ -17,7 +17,7 @@ package org.springframework.cloud.skipper.server.repository;
 
 import java.util.List;
 
-import org.springframework.cloud.skipper.domain.Release;
+import org.springframework.cloud.skipper.domain.SkipperRelease;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -29,11 +29,11 @@ import org.springframework.data.rest.core.annotation.RestResource;
  */
 @RepositoryRestResource(path = "releases", collectionResourceRel = "releases")
 @SuppressWarnings("unchecked")
-public interface ReleaseRepository extends PagingAndSortingRepository<Release, Long>, ReleaseRepositoryCustom {
+public interface ReleaseRepository extends PagingAndSortingRepository<SkipperRelease, Long>, ReleaseRepositoryCustom {
 
 	@Override
 	@RestResource(exported = false)
-	Release save(Release release);
+	SkipperRelease save(SkipperRelease release);
 
 	@Override
 	@RestResource(exported = false)
@@ -41,20 +41,20 @@ public interface ReleaseRepository extends PagingAndSortingRepository<Release, L
 
 	@Override
 	@RestResource(exported = false)
-	void delete(Release release);
+	void delete(SkipperRelease release);
 
 	@Override
 	@RestResource(exported = false)
 	void deleteAll();
 
-	List<Release> findByNameOrderByVersionDesc(@Param("name") String name);
+	List<SkipperRelease> findByNameOrderByVersionDesc(@Param("name") String name);
 
-	List<Release> findByNameIgnoreCaseContainingOrderByNameAscVersionDesc(@Param("name") String name);
+	List<SkipperRelease> findByNameIgnoreCaseContainingOrderByNameAscVersionDesc(@Param("name") String name);
 
-	List<Release> findByNameAndVersionBetweenOrderByNameAscVersionDesc(@Param("name") String name,
+	List<SkipperRelease> findByNameAndVersionBetweenOrderByNameAscVersionDesc(@Param("name") String name,
 			@Param("from") int fromVersion, @Param("to") int toVersion);
 
-	Release findTopByNameOrderByVersionDesc(@Param("name") String name);
+	SkipperRelease findTopByNameOrderByVersionDesc(@Param("name") String name);
 
-	List<Release> findByNameIgnoreCaseContaining(@Param("name") String name);
+	List<SkipperRelease> findByNameIgnoreCaseContaining(@Param("name") String name);
 }
