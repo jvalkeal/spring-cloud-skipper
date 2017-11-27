@@ -38,4 +38,12 @@ public interface UpgradeStrategy {
 	 */
 	Release upgrade(Release existingRelease, Release replacingRelease, ReleaseAnalysisReport releaseAnalysisReport);
 
+	void deployApps(Release existingRelease, Release replacingRelease, ReleaseAnalysisReport releaseAnalysisReport);
+
+	boolean checkStatus(Release replacingRelease);
+
+	void accept(Release existingRelease, Release replacingRelease, ReleaseAnalysisReport releaseAnalysisReport);
+
+	void cancel(Release existingRelease, Release replacingRelease, ReleaseAnalysisReport releaseAnalysisReport);
+
 }
