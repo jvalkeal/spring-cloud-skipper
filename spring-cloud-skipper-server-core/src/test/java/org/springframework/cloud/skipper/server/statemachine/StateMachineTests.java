@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2017-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cloud.skipper.domain.Info;
 import org.springframework.cloud.skipper.domain.InstallProperties;
+import org.springframework.cloud.skipper.domain.InstallRequest;
 import org.springframework.cloud.skipper.domain.Package;
 import org.springframework.cloud.skipper.domain.PackageMetadata;
 import org.springframework.cloud.skipper.domain.Release;
@@ -48,6 +49,7 @@ import org.springframework.cloud.skipper.server.service.ReleaseService;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperEventHeaders;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperEvents;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperStates;
+import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperVariables;
 import org.springframework.cloud.skipper.server.statemachine.StateMachineTests.TestConfig;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -57,8 +59,12 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.statemachine.StateMachine;
+import org.springframework.statemachine.StateMachineContext;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.persist.StateMachineRuntimePersister;
+import org.springframework.statemachine.service.StateMachineService;
+import org.springframework.statemachine.support.DefaultExtendedState;
+import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.statemachine.test.StateMachineTestPlan;
 import org.springframework.statemachine.test.StateMachineTestPlanBuilder;
 import org.springframework.test.annotation.DirtiesContext;
@@ -166,6 +172,129 @@ public class StateMachineTests {
 					.build();
 		plan.test();
 
+		Mockito.verify(errorAction, never()).execute(any());
+	}
+
+	@Test
+	public void testRestoreFromInstallUsingInstallRequest() throws Exception {
+		Mockito.when(releaseService.install(any(InstallRequest.class))).thenReturn(new Release());
+
+		DefaultExtendedState extendedState = new DefaultExtendedState();
+		extendedState.getVariables().put(SkipperEventHeaders.INSTALL_REQUEST, new InstallRequest());
+
+		StateMachineContext<SkipperStates, SkipperEvents> stateMachineContext = new DefaultStateMachineContext<>(
+				SkipperStates.INSTALL, SkipperEvents.INSTALL, null, extendedState);
+		Mockito.when(stateMachineRuntimePersister.read(any())).thenReturn(stateMachineContext);
+
+		StateMachineService<SkipperStates, SkipperEvents> stateMachineService = context.getBean(StateMachineService.class);
+		StateMachine<SkipperStates, SkipperEvents> stateMachine = stateMachineService
+				.acquireStateMachine("testRestoreFromInstallUsingInstallRequest", false);
+
+		StateMachineTestPlan<SkipperStates, SkipperEvents> plan =
+				StateMachineTestPlanBuilder.<SkipperStates, SkipperEvents>builder()
+					.defaultAwaitTime(10)
+					.stateMachine(stateMachine)
+					.step()
+						.expectStates(SkipperStates.INITIAL)
+						.expectStateChanged(2)
+						.and()
+					.build();
+		plan.test();
+
+		Mockito.verify(upgradeCancelAction, never()).execute(any());
+		Mockito.verify(errorAction, never()).execute(any());
+	}
+
+	@Test
+	public void testRestoreFromUpgradeUsingUpgradeRequest() throws Exception {
+		Mockito.when(releaseReportService.createReport(any())).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
+				new ReleaseDifference(), new Release(), new Release()));
+		Mockito.when(upgradeStrategy.checkStatus(any()))
+				.thenReturn(true);
+
+		DefaultExtendedState extendedState = new DefaultExtendedState();
+		extendedState.getVariables().put(SkipperEventHeaders.UPGRADE_REQUEST, new UpgradeRequest());
+
+		StateMachineContext<SkipperStates, SkipperEvents> stateMachineContext = new DefaultStateMachineContext<>(
+				SkipperStates.UPGRADE, SkipperEvents.UPGRADE, null, extendedState);
+		Mockito.when(stateMachineRuntimePersister.read(any())).thenReturn(stateMachineContext);
+
+		StateMachineService<SkipperStates, SkipperEvents> stateMachineService = context.getBean(StateMachineService.class);
+		StateMachine<SkipperStates, SkipperEvents> stateMachine = stateMachineService
+				.acquireStateMachine("testRestoreFromUpgradeUsingUpgradeRequest", false);
+
+		StateMachineTestPlan<SkipperStates, SkipperEvents> plan =
+				StateMachineTestPlanBuilder.<SkipperStates, SkipperEvents>builder()
+					.defaultAwaitTime(10)
+					.stateMachine(stateMachine)
+					.step()
+						.expectStates(SkipperStates.INITIAL)
+						.expectStateChanged(8)
+						.and()
+					.build();
+		plan.test();
+		Mockito.verify(upgradeCancelAction, never()).execute(any());
+		Mockito.verify(errorAction, never()).execute(any());
+	}
+
+	@Test
+	public void testRestoreFromInstallUsingInstallProperties() throws Exception {
+		Mockito.when(releaseService.install(any(), any(InstallProperties.class))).thenReturn(new Release());
+
+		DefaultExtendedState extendedState = new DefaultExtendedState();
+		extendedState.getVariables().put(SkipperEventHeaders.INSTALL_PROPERTIES, new InstallProperties());
+
+		StateMachineContext<SkipperStates, SkipperEvents> stateMachineContext = new DefaultStateMachineContext<>(
+				SkipperStates.INSTALL, SkipperEvents.INSTALL, null, extendedState);
+		Mockito.when(stateMachineRuntimePersister.read(any())).thenReturn(stateMachineContext);
+
+		StateMachineService<SkipperStates, SkipperEvents> stateMachineService = context.getBean(StateMachineService.class);
+		StateMachine<SkipperStates, SkipperEvents> stateMachine = stateMachineService
+				.acquireStateMachine("testRestoreFromInstallUsingInstallProperties", false);
+
+		StateMachineTestPlan<SkipperStates, SkipperEvents> plan =
+				StateMachineTestPlanBuilder.<SkipperStates, SkipperEvents>builder()
+					.defaultAwaitTime(10)
+					.stateMachine(stateMachine)
+					.step()
+						.expectStates(SkipperStates.INITIAL)
+						.expectStateChanged(2)
+						.and()
+					.build();
+		plan.test();
+
+		Mockito.verify(upgradeCancelAction, never()).execute(any());
+		Mockito.verify(errorAction, never()).execute(any());
+	}
+
+	@Test
+	public void testRestoreFromInstallUsingTargetReleaseId() throws Exception {
+		Mockito.when(releaseRepository.findOne(any(Long.class))).thenReturn(new Release());
+		Mockito.when(releaseService.install(any(Release.class))).thenReturn(new Release());
+
+		DefaultExtendedState extendedState = new DefaultExtendedState();
+		extendedState.getVariables().put(SkipperVariables.TARGET_RELEASE_ID, 123l);
+
+		StateMachineContext<SkipperStates, SkipperEvents> stateMachineContext = new DefaultStateMachineContext<>(
+				SkipperStates.INSTALL, SkipperEvents.INSTALL, null, extendedState);
+		Mockito.when(stateMachineRuntimePersister.read(any())).thenReturn(stateMachineContext);
+
+		StateMachineService<SkipperStates, SkipperEvents> stateMachineService = context.getBean(StateMachineService.class);
+		StateMachine<SkipperStates, SkipperEvents> stateMachine = stateMachineService
+				.acquireStateMachine("testRestoreFromInstallUsingTargetReleaseId", false);
+
+		StateMachineTestPlan<SkipperStates, SkipperEvents> plan =
+				StateMachineTestPlanBuilder.<SkipperStates, SkipperEvents>builder()
+					.defaultAwaitTime(10)
+					.stateMachine(stateMachine)
+					.step()
+						.expectStates(SkipperStates.INITIAL)
+						.expectStateChanged(2)
+						.and()
+					.build();
+		plan.test();
+
+		Mockito.verify(upgradeCancelAction, never()).execute(any());
 		Mockito.verify(errorAction, never()).execute(any());
 	}
 
@@ -305,6 +434,7 @@ public class StateMachineTests {
 		Mockito.verify(errorAction, never()).execute(any());
 	}
 
+
 	@Test
 	public void testRollbackInstall() throws Exception {
 		Release release = new Release();
@@ -316,7 +446,7 @@ public class StateMachineTests {
 		release.setInfo(info);
 		Mockito.when(releaseRepository.findLatestReleaseForUpdate(any())).thenReturn(release);
 		Mockito.when(releaseRepository.findReleaseToRollback(any())).thenReturn(release);
-		Mockito.when(releaseService.install(any(Release.class))).thenReturn(release);
+		Mockito.when(releaseService.install(any(InstallRequest.class))).thenReturn(release);
 
 
 		Message<SkipperEvents> message1 = MessageBuilder

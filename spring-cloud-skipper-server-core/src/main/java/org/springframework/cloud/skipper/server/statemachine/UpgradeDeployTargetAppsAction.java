@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2017-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.cloud.skipper.SkipperException;
+import org.springframework.cloud.skipper.domain.UpgradeRequest;
 import org.springframework.cloud.skipper.server.deployer.ReleaseAnalysisReport;
 import org.springframework.cloud.skipper.server.deployer.strategies.UpgradeStrategy;
+import org.springframework.cloud.skipper.server.service.ReleaseReportService;
+import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperEventHeaders;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperEvents;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperStates;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperVariables;
@@ -36,15 +39,18 @@ import org.springframework.statemachine.action.Action;
 public class UpgradeDeployTargetAppsAction extends AbstractAction {
 
 	private static final Logger log = LoggerFactory.getLogger(UpgradeDeployTargetAppsAction.class);
+	private final ReleaseReportService releaseReportService;
 	private final UpgradeStrategy upgradeStrategy;
 
 	/**
 	 * Instantiates a new upgrade deploy target apps action.
 	 *
+	 * @param releaseReportService the release report service
 	 * @param upgradeStrategy the upgrade strategy
 	 */
-	public UpgradeDeployTargetAppsAction(UpgradeStrategy upgradeStrategy) {
+	public UpgradeDeployTargetAppsAction(ReleaseReportService releaseReportService, UpgradeStrategy upgradeStrategy) {
 		super();
+		this.releaseReportService = releaseReportService;
 		this.upgradeStrategy = upgradeStrategy;
 	}
 
@@ -54,9 +60,19 @@ public class UpgradeDeployTargetAppsAction extends AbstractAction {
 		ReleaseAnalysisReport releaseAnalysisReport = context.getExtendedState().get(SkipperVariables.RELEASE_ANALYSIS_REPORT,
 				ReleaseAnalysisReport.class);
 		log.info("releaseAnalysisReport {}", releaseAnalysisReport);
+
+		if (releaseAnalysisReport == null) {
+			UpgradeRequest upgradeRequest = context.getExtendedState().get(SkipperEventHeaders.UPGRADE_REQUEST,
+					UpgradeRequest.class);
+			if (upgradeRequest != null) {
+				releaseAnalysisReport = this.releaseReportService.createReport(upgradeRequest);
+			}
+		}
+
 		if (releaseAnalysisReport == null) {
 			throw new SkipperException("ReleaseAnalysis report is null");
 		}
+
 		this.upgradeStrategy.deployApps(releaseAnalysisReport.getExistingRelease(),
 				releaseAnalysisReport.getReplacingRelease(), releaseAnalysisReport);
 		context.getExtendedState().getVariables().put(SkipperVariables.RELEASE, releaseAnalysisReport.getReplacingRelease());

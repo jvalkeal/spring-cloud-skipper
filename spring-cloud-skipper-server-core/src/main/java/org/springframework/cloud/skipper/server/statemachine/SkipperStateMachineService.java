@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2017-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -483,11 +483,13 @@ public class SkipperStateMachineService {
 		 * Variable for a {@link Release} where skipper is coming from.
 		 */
 		SOURCE_RELEASE,
+		SOURCE_RELEASE_ID,
 
 		/**
 		 * Variable for a {@link Release} where skipper is going to.
 		 */
 		TARGET_RELEASE,
+		TARGET_RELEASE_ID,
 
 		/**
 		 * Variable keeping a cutoff time.

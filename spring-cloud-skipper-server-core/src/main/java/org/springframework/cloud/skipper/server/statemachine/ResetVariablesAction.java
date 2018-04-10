@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2017-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
  */
 package org.springframework.cloud.skipper.server.statemachine;
 
+import org.springframework.cloud.skipper.domain.InstallProperties;
+import org.springframework.cloud.skipper.domain.InstallRequest;
+import org.springframework.cloud.skipper.domain.UpgradeRequest;
+import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperEventHeaders;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperEvents;
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperStates;
 import org.springframework.statemachine.StateContext;
@@ -31,5 +35,39 @@ public class ResetVariablesAction implements Action<SkipperStates, SkipperEvents
 	@Override
 	public void execute(StateContext<SkipperStates, SkipperEvents> context) {
 		context.getExtendedState().getVariables().clear();
+
+		// storing various requests into context so that those get persisted
+		// when machine goes to any parent states (rollback, upgrade, install, delete)
+
+		// for install
+		InstallRequest installRequest = context.getMessageHeaders().get(SkipperEventHeaders.INSTALL_REQUEST,
+				InstallRequest.class);
+		if (installRequest != null) {
+			context.getExtendedState().getVariables().put(SkipperEventHeaders.INSTALL_REQUEST, installRequest);
+		}
+
+		InstallProperties installProperties = context.getMessageHeaders().get(SkipperEventHeaders.INSTALL_PROPERTIES,
+				InstallProperties.class);
+		if (installProperties != null) {
+			context.getExtendedState().getVariables().put(SkipperEventHeaders.INSTALL_PROPERTIES, installProperties);
+		}
+
+		// for rollback and delete
+		String releaseName = context.getMessageHeaders().get(SkipperEventHeaders.RELEASE_NAME, String.class);
+		if (releaseName != null) {
+			context.getExtendedState().getVariables().put(SkipperEventHeaders.RELEASE_NAME, releaseName);
+		}
+
+		// for rollback
+		Integer rollbackVersion = context.getMessageHeaders().get(SkipperEventHeaders.ROLLBACK_VERSION, Integer.class);
+		if (rollbackVersion != null) {
+			context.getExtendedState().getVariables().put(SkipperEventHeaders.ROLLBACK_VERSION, rollbackVersion);
+		}
+
+		// for upgrade
+		UpgradeRequest upgradeRequest = context.getMessageHeaders().get(SkipperEventHeaders.UPGRADE_REQUEST, UpgradeRequest.class);
+		if (upgradeRequest != null) {
+			context.getExtendedState().getVariables().put(SkipperEventHeaders.UPGRADE_REQUEST, upgradeRequest);
+		}
 	}
 }
