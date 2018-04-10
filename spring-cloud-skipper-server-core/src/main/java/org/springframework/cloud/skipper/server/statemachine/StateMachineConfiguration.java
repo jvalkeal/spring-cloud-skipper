@@ -322,7 +322,7 @@ public class StateMachineConfiguration {
 
 		@Bean
 		public UpgradeCheckTargetAppsAction upgradeCheckTargetAppsAction() {
-			return new UpgradeCheckTargetAppsAction(upgradeStrategy);
+			return new UpgradeCheckTargetAppsAction(releaseReportService, upgradeStrategy);
 		}
 
 		@Bean

@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.cloud.skipper.domain.DeleteProperties;
 import org.springframework.cloud.skipper.domain.Info;
 import org.springframework.cloud.skipper.domain.InstallProperties;
 import org.springframework.cloud.skipper.domain.InstallRequest;
@@ -480,6 +481,42 @@ public class StateMachineTests {
 		plan.test();
 
 		Mockito.verify(errorAction, never()).execute(any());
+	}
+
+	@Test
+	public void testDeleteSucceed() throws Exception {
+		Mockito.when(releaseService.delete(any(String.class), any(boolean.class))).thenReturn(new Release());
+		DeleteProperties deleteProperties = new DeleteProperties();
+		Message<SkipperEvents> message1 = MessageBuilder
+				.withPayload(SkipperEvents.DELETE)
+				.setHeader(SkipperEventHeaders.RELEASE_NAME, "testDeleteSucceed")
+				.setHeader(SkipperEventHeaders.RELEASE_DELETE_PROPERTIES, deleteProperties)
+				.build();
+
+		StateMachineFactory<SkipperStates, SkipperEvents> factory = context.getBean(StateMachineFactory.class);
+		StateMachine<SkipperStates, SkipperEvents> stateMachine = factory.getStateMachine("testDeleteSucceed");
+
+		StateMachineTestPlan<SkipperStates, SkipperEvents> plan =
+				StateMachineTestPlanBuilder.<SkipperStates, SkipperEvents>builder()
+					.defaultAwaitTime(10)
+					.stateMachine(stateMachine)
+					.step()
+						.expectStateMachineStarted(1)
+						.expectStates(SkipperStates.INITIAL)
+						.and()
+					.step()
+						.sendEvent(message1)
+						.expectStates(SkipperStates.INITIAL)
+						.expectStateChanged(3)
+						.expectStateEntered(SkipperStates.DELETE,
+								SkipperStates.DELETE_DELETE,
+								SkipperStates.INITIAL)
+						.and()
+					.build();
+		plan.test();
+
+		Mockito.verify(errorAction, never()).execute(any());
+
 	}
 
 	private Package createPkg() {

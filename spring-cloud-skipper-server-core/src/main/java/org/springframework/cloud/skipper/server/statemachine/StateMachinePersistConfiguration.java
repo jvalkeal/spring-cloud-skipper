@@ -53,7 +53,7 @@ public class StateMachinePersistConfiguration {
 		JpaPersistingStateMachineInterceptor<SkipperStates, SkipperEvents, String> interceptor = new JpaPersistingStateMachineInterceptor<>(
 				persist);
 		interceptor.setExtendedStateVariablesFunction(new SkipUnwantedVariablesFunction());
-		return new JpaPersistingStateMachineInterceptor<>(persist);
+		return interceptor;
 	}
 
 	private static class SkipUnwantedVariablesFunction
@@ -62,10 +62,10 @@ public class StateMachinePersistConfiguration {
 		@Override
 		public Map<Object, Object> apply(StateMachine<SkipperStates, SkipperEvents> stateMachine) {
 			return stateMachine.getExtendedState().getVariables().entrySet().stream().filter(e -> {
-				return ObjectUtils.nullSafeEquals(e.getKey(), SkipperVariables.SOURCE_RELEASE)
+				return !(ObjectUtils.nullSafeEquals(e.getKey(), SkipperVariables.SOURCE_RELEASE)
 						|| ObjectUtils.nullSafeEquals(e.getKey(), SkipperVariables.TARGET_RELEASE)
 						|| ObjectUtils.nullSafeEquals(e.getKey(), SkipperVariables.RELEASE)
-						|| ObjectUtils.nullSafeEquals(e.getKey(), SkipperVariables.RELEASE_ANALYSIS_REPORT);
+						|| ObjectUtils.nullSafeEquals(e.getKey(), SkipperVariables.RELEASE_ANALYSIS_REPORT));
 			}).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 		}
 	}
