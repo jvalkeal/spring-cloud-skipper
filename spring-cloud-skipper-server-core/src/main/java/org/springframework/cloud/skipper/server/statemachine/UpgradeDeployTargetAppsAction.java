@@ -65,8 +65,8 @@ public class UpgradeDeployTargetAppsAction extends AbstractAction {
 			UpgradeRequest upgradeRequest = context.getExtendedState().get(SkipperEventHeaders.UPGRADE_REQUEST,
 					UpgradeRequest.class);
 			if (upgradeRequest != null) {
-				releaseAnalysisReport = this.releaseReportService.createReport(upgradeRequest);
-			}
+				releaseAnalysisReport = this.releaseReportService.createReport(upgradeRequest, false);
+				context.getExtendedState().getVariables().put(SkipperVariables.RELEASE_ANALYSIS_REPORT, releaseAnalysisReport);			}
 		}
 
 		if (releaseAnalysisReport == null) {

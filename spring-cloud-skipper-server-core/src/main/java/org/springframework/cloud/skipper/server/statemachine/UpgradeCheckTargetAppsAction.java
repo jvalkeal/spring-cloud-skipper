@@ -27,6 +27,8 @@ import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachine
 import org.springframework.cloud.skipper.server.statemachine.SkipperStateMachineService.SkipperVariables;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 
 /**
  * StateMachine {@link Action} checking upgrade status with an {@link UpgradeStrategy}.
@@ -58,11 +60,21 @@ public class UpgradeCheckTargetAppsAction extends AbstractAction {
 				ReleaseAnalysisReport.class);
 
 		if (releaseAnalysisReport == null) {
+
+			Object object = context.getExtendedState().get(SkipperEventHeaders.UPGRADE_REQUEST,
+					Object.class);
+
+			if (object != null) {
+				log.info("XXX1 " + object);
+				log.info("XXX2 " + object.getClass());
+				log.info("XXX3 " + UpgradeRequest.class.isAssignableFrom(object.getClass()));
+			}
+
 			UpgradeRequest upgradeRequest = context.getExtendedState().get(SkipperEventHeaders.UPGRADE_REQUEST,
 					UpgradeRequest.class);
 			if (upgradeRequest != null) {
-				releaseAnalysisReport = this.releaseReportService.createReport(upgradeRequest);
-			}
+				releaseAnalysisReport = this.releaseReportService.createReport(upgradeRequest, false);
+				context.getExtendedState().getVariables().put(SkipperVariables.RELEASE_ANALYSIS_REPORT, releaseAnalysisReport);			}
 		}
 
 		int upgradeStatus = 0;

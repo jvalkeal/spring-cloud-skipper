@@ -38,7 +38,8 @@ import org.springframework.statemachine.action.Action;
 public class UpgradeStartAction extends AbstractAction {
 
 	private static final Logger log = LoggerFactory.getLogger(UpgradeStartAction.class);
-	private static final long DEFAULT_UPGRADE_TIMEOUT = 300000L;
+//	private static final long DEFAULT_UPGRADE_TIMEOUT = 300000L;
+	private static final long DEFAULT_UPGRADE_TIMEOUT = 60000L;
 	private final ReleaseReportService releaseReportService;
 
 	/**
@@ -64,7 +65,7 @@ public class UpgradeStartAction extends AbstractAction {
 
 		log.info("upgradeRequest {}", upgradeRequest);
 		if (upgradeRequest != null) {
-			ReleaseAnalysisReport releaseAnalysisReport = this.releaseReportService.createReport(upgradeRequest);
+			ReleaseAnalysisReport releaseAnalysisReport = this.releaseReportService.createReport(upgradeRequest, true);
 			log.info("releaseAnalysisReport difference summary {}", releaseAnalysisReport.getReleaseDifferenceSummary());
 			context.getExtendedState().getVariables().put(SkipperVariables.RELEASE_ANALYSIS_REPORT, releaseAnalysisReport);
 		}

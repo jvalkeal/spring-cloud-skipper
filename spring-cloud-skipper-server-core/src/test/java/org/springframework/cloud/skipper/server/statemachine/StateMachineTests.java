@@ -208,7 +208,7 @@ public class StateMachineTests {
 
 	@Test
 	public void testRestoreFromUpgradeUsingUpgradeRequest() throws Exception {
-		Mockito.when(releaseReportService.createReport(any())).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
+		Mockito.when(releaseReportService.createReport(any(), any(boolean.class))).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
 				new ReleaseDifference(), new Release(), new Release()));
 		Mockito.when(upgradeStrategy.checkStatus(any()))
 				.thenReturn(true);
@@ -301,7 +301,7 @@ public class StateMachineTests {
 
 	@Test
 	public void testSimpleUpgradeShouldNotError() throws Exception {
-		Mockito.when(releaseReportService.createReport(any())).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
+		Mockito.when(releaseReportService.createReport(any(), any(boolean.class))).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
 				new ReleaseDifference(), new Release(), new Release()));
 		Mockito.when(upgradeStrategy.checkStatus(any()))
 				.thenReturn(true);
@@ -337,7 +337,7 @@ public class StateMachineTests {
 
 	@Test
 	public void testUpgradeFailsNewAppFailToDeploy() throws Exception {
-		Mockito.when(releaseReportService.createReport(any())).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
+		Mockito.when(releaseReportService.createReport(any(), any(boolean.class))).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
 				new ReleaseDifference(), new Release(), new Release()));
 		Mockito.when(upgradeStrategy.checkStatus(any()))
 				.thenReturn(false);
@@ -385,7 +385,7 @@ public class StateMachineTests {
 
 	@Test
 	public void testUpgradeCancelWhileCheckingApps() throws Exception {
-		Mockito.when(releaseReportService.createReport(any())).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
+		Mockito.when(releaseReportService.createReport(any(), any(boolean.class))).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
 				new ReleaseDifference(), new Release(), new Release()));
 		Mockito.when(upgradeStrategy.checkStatus(any()))
 				.thenReturn(false);
@@ -549,7 +549,7 @@ public class StateMachineTests {
 
 	@Test
 	public void testInstallDeniedWhileUpgrading() throws Exception {
-		Mockito.when(releaseReportService.createReport(any())).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
+		Mockito.when(releaseReportService.createReport(any(), any(boolean.class))).thenReturn(new ReleaseAnalysisReport(new ArrayList<>(),
 				new ReleaseDifference(), new Release(), new Release()));
 		Mockito.when(upgradeStrategy.checkStatus(any()))
 				.thenReturn(false);

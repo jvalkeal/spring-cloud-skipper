@@ -43,7 +43,7 @@ public interface ReleaseManager {
 	 * release
 	 * @return a report describing the actions to take to update
 	 */
-	ReleaseAnalysisReport createReport(Release existingRelease, Release replacingRelease);
+	ReleaseAnalysisReport createReport(Release existingRelease, Release replacingRelease, boolean save);
 
 	/**
 	 * Delete the release

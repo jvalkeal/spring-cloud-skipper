@@ -71,7 +71,7 @@ public class ReleaseReportService {
 	 * release
 	 */
 	@Transactional
-	public ReleaseAnalysisReport createReport(UpgradeRequest upgradeRequest) {
+	public ReleaseAnalysisReport createReport(UpgradeRequest upgradeRequest, boolean save) {
 		Assert.notNull(upgradeRequest.getUpgradeProperties(), "UpgradeProperties can not be null");
 		Assert.notNull(upgradeRequest.getPackageIdentifier(), "PackageIdentifier can not be null");
 		UpgradeProperties upgradeProperties = upgradeRequest.getUpgradeProperties();
@@ -82,7 +82,7 @@ public class ReleaseReportService {
 				packageIdentifier.getPackageName(),
 				packageIdentifier
 						.getPackageVersion());
-		Release replacingRelease = createReleaseForUpgrade(packageMetadata, latestRelease.getVersion() + 1,
+		Release replacingRelease = createReleaseForUpgrade(packageMetadata, latestRelease.getVersion() + (save ? 1 : 0),
 				upgradeProperties,
 				existingRelease.getPlatformName());
 		Map<String, Object> model = ConfigValueUtils.mergeConfigValues(replacingRelease.getPkg(),
@@ -91,7 +91,7 @@ public class ReleaseReportService {
 		Manifest manifest = new Manifest();
 		manifest.setData(manifestData);
 		replacingRelease.setManifest(manifest);
-		return this.releaseManager.createReport(existingRelease, replacingRelease);
+		return this.releaseManager.createReport(existingRelease, replacingRelease, save);
 	}
 
 	private Release createReleaseForUpgrade(PackageMetadata packageMetadata, Integer newVersion,

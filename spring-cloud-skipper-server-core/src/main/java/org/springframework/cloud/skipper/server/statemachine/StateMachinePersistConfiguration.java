@@ -65,7 +65,8 @@ public class StateMachinePersistConfiguration {
 				return !(ObjectUtils.nullSafeEquals(e.getKey(), SkipperVariables.SOURCE_RELEASE)
 						|| ObjectUtils.nullSafeEquals(e.getKey(), SkipperVariables.TARGET_RELEASE)
 						|| ObjectUtils.nullSafeEquals(e.getKey(), SkipperVariables.RELEASE)
-						|| ObjectUtils.nullSafeEquals(e.getKey(), SkipperVariables.RELEASE_ANALYSIS_REPORT));
+						|| ObjectUtils.nullSafeEquals(e.getKey(), SkipperVariables.RELEASE_ANALYSIS_REPORT))
+						|| ObjectUtils.nullSafeEquals(e.getKey(), SkipperVariables.ERROR);
 			}).collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 		}
 	}

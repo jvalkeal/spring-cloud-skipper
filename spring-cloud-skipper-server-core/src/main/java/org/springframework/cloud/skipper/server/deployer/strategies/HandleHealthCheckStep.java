@@ -105,9 +105,11 @@ public class HandleHealthCheckStep {
 			this.releaseRepository.save(replacingRelease);
 		}
 		catch (DataAccessException e) {
+			logger.debug("Error1 deleteReplacingRelease {}", e);
 			throw e;
 		}
 		catch (Exception e) {
+			logger.debug("Error2 deleteReplacingRelease {}", e);
 			// Update Status in DB
 			Status status = new Status();
 			status.setStatusCode(StatusCode.FAILED);
@@ -131,9 +133,11 @@ public class HandleHealthCheckStep {
 			this.deleteStep.delete(existingRelease, existingAppDeployerData, applicationNamesToUpgrade);
 		}
 		catch (DataAccessException e) {
+			logger.debug("Error1 deleteExistingRelease {}", e);
 			throw e;
 		}
 		catch (Exception e) {
+			logger.debug("Error2 deleteExistingRelease {}", e);
 			// Update Status in DB
 			Status status = new Status();
 			status.setStatusCode(StatusCode.FAILED);

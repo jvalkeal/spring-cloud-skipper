@@ -135,7 +135,7 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 	}
 
 	@Override
-	public ReleaseAnalysisReport createReport(Release existingRelease, Release replacingRelease) {
+	public ReleaseAnalysisReport createReport(Release existingRelease, Release replacingRelease, boolean save) {
 		ReleaseAnalysisReport releaseAnalysisReport = this.releaseAnalyzer.analyze(existingRelease, replacingRelease);
 		if (releaseAnalysisReport.getReleaseDifference().areEqual()) {
 			throw new SkipperException(
@@ -155,7 +155,9 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 		Manifest manifest = new Manifest();
 		manifest.setData(manifestData);
 		replacingRelease.setManifest(manifest);
-		this.releaseRepository.save(replacingRelease);
+		if (save) {
+			this.releaseRepository.save(replacingRelease);
+		}
 		return releaseAnalysisReport;
 	}
 
