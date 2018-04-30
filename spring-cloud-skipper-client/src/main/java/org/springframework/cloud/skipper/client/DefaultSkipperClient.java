@@ -35,6 +35,7 @@ import org.springframework.cloud.skipper.domain.Manifest;
 import org.springframework.cloud.skipper.domain.PackageMetadata;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.domain.Repository;
+import org.springframework.cloud.skipper.domain.RollbackRequest;
 import org.springframework.cloud.skipper.domain.Template;
 import org.springframework.cloud.skipper.domain.UpgradeRequest;
 import org.springframework.cloud.skipper.domain.UploadRequest;
@@ -232,6 +233,12 @@ public class DefaultSkipperClient implements SkipperClient {
 			url = String.format("%s/%s/%s", baseUri, "release", releaseName);
 		}
 		this.restTemplate.delete(url, deletePackage);
+	}
+
+	@Override
+	public Release rollback(RollbackRequest rollbackRequest) {
+		String url = String.format("%s/%s/%s", baseUri, "release", "rollback", rollbackRequest);
+		return this.restTemplate.postForObject(url, null, Release.class);
 	}
 
 	@Override
