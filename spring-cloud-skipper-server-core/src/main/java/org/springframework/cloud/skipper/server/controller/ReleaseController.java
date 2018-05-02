@@ -142,6 +142,7 @@ public class ReleaseController {
 
 	@RequestMapping(path = "/rollback/{name}/{version}", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
+	@Deprecated
 	public Resource<Release> rollbackWithNamedVersion(@PathVariable("name") String releaseName,
 			@PathVariable("version") int rollbackVersion) {
 		Release release = this.skipperStateMachineService

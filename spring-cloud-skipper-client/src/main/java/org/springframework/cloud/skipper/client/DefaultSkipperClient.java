@@ -237,14 +237,19 @@ public class DefaultSkipperClient implements SkipperClient {
 
 	@Override
 	public Release rollback(RollbackRequest rollbackRequest) {
-		String url = String.format("%s/%s/%s", baseUri, "release", "rollback", rollbackRequest);
-		return this.restTemplate.postForObject(url, null, Release.class);
+		ParameterizedTypeReference<Resource<Release>> typeReference =
+				new ParameterizedTypeReference<Resource<Release>>() { };
+		String url = String.format("%s/%s/%s", baseUri, "release", "rollback");
+
+		HttpEntity<RollbackRequest> httpEntity = new HttpEntity<>(rollbackRequest);
+		ResponseEntity<Resource<Release>> resourceResponseEntity =
+				restTemplate.exchange(url, HttpMethod.POST, httpEntity,	typeReference);
+		return resourceResponseEntity.getBody().getContent();
 	}
 
 	@Override
 	public Release rollback(String releaseName, int releaseVersion) {
-		String url = String.format("%s/%s/%s/%s/%s", baseUri, "release", "rollback", releaseName, releaseVersion);
-		return this.restTemplate.postForObject(url, null, Release.class);
+		return rollback(new RollbackRequest(releaseName, releaseVersion));
 	}
 
 	@Override
