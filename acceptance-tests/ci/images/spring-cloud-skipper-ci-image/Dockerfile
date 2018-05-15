@@ -32,7 +32,7 @@ RUN curl -L https://github.com/progrium/entrykit/releases/download/v${ENTRYKIT_V
 
 ARG BRANCH
 
-ADD https://raw.githubusercontent.com/spring-cloud/spring-cloud-skipper/$BRANCH/acceptance-tests/ci/images/docker-lib.sh /docker-lib.sh
+ADD https://raw.githubusercontent.com/jvalkeal/spring-cloud-skipper/$BRANCH/acceptance-tests/ci/images/docker-lib.sh /docker-lib.sh
 #ADD https://raw.githubusercontent.com/spring-cloud/spring-cloud-skipper/master/acceptance-tests/ci/images/docker-lib.sh /docker-lib.sh
 
 ENTRYPOINT [ \
