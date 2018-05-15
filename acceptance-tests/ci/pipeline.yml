@@ -51,6 +51,8 @@ jobs:
   - put: spring-cloud-skipper-ci-image
     params:
       build: ci-images-git-repo/acceptance-tests/ci/images/spring-cloud-skipper-ci-image
+      build_args:
+        BRANCH: ((branch))
 
 - name: acceptance-tests
   serial: true
