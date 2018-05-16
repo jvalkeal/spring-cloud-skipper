@@ -7,12 +7,8 @@ RUN apt-get update && \
 
 ADD https://raw.githubusercontent.com/spring-io/concourse-java-scripts/v0.0.1/concourse-java.sh /opt/
 
-#ENV DOCKER_VERSION=17.12.0-ce \
-#    DOCKER_COMPOSE_VERSION=1.18.0 \
-#    ENTRYKIT_VERSION=0.4.0
-
-ENV DOCKER_VERSION=18.03.1-ce \
-    DOCKER_COMPOSE_VERSION=1.21.2 \
+ENV DOCKER_VERSION=17.12.0-ce \
+    DOCKER_COMPOSE_VERSION=1.18.0 \
     ENTRYKIT_VERSION=0.4.0
 
 RUN apt-get update && \
@@ -31,8 +27,12 @@ RUN curl -L https://github.com/progrium/entrykit/releases/download/v${ENTRYKIT_V
     entrykit --symlink
 
 ARG BRANCH
+ARG GITHUB_REPO_RAW
+ARG BASE_PATH
 
-ADD https://raw.githubusercontent.com/jvalkeal/spring-cloud-skipper/$BRANCH/acceptance-tests/ci/images/docker-lib.sh /docker-lib.sh
+ADD $GITHUB_REPO_RAW/$BRANCH/$BASE_PATH/images/docker-lib.sh /docker-lib.sh
+#ADD $GITHUB_REPO_RAW/$BRANCH/acceptance-tests/ci/images/docker-lib.sh /docker-lib.sh
+#ADD https://raw.githubusercontent.com/jvalkeal/spring-cloud-skipper/$BRANCH/acceptance-tests/ci/images/docker-lib.sh /docker-lib.sh
 #ADD https://raw.githubusercontent.com/spring-cloud/spring-cloud-skipper/master/acceptance-tests/ci/images/docker-lib.sh /docker-lib.sh
 
 ENTRYPOINT [ \

@@ -53,6 +53,8 @@ jobs:
       build: ci-images-git-repo/acceptance-tests/ci/images/spring-cloud-skipper-ci-image
       build_args:
         BRANCH: ((branch))
+        GITHUB_REPO_RAW: ((github-repo-raw))
+        BASE_PATH: ((base-path))
 
 - name: acceptance-tests
   serial: true
