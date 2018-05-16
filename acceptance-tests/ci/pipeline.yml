@@ -50,7 +50,7 @@ jobs:
     trigger: true
   - put: spring-cloud-skipper-ci-image
     params:
-      build: ci-images-git-repo/acceptance-tests/ci/images/spring-cloud-skipper-ci-image
+      build: ci-images-git-repo/((base-path))/ci/images/spring-cloud-skipper-ci-image
       build_args:
         BRANCH: ((branch))
         GITHUB_REPO_RAW: ((github-repo-raw))
@@ -68,7 +68,7 @@ jobs:
       privileged: true
       timeout: 90m
       image: spring-cloud-skipper-ci-image
-      file: git-repo/acceptance-tests/ci/tasks/build-project.yml
+      file: git-repo/((base-path))/ci/tasks/build-project.yml
       on_failure:
         aggregate:
         - put: acceptance-tests-reports
@@ -87,7 +87,7 @@ jobs:
       privileged: true
       timeout: 30m
       image: spring-cloud-skipper-ci-image
-      file: git-repo/acceptance-tests/ci/tasks/build-skipper-server-with-drivers100.yml
+      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers100.yml
   - put: artifactory-repo
     params: &artifactory-params
       repo: libs-snapshot-local
@@ -114,7 +114,7 @@ jobs:
       privileged: true
       timeout: 30m
       image: spring-cloud-skipper-ci-image
-      file: git-repo/acceptance-tests/ci/tasks/build-skipper-server-with-drivers101.yml
+      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers101.yml
   - put: artifactory-repo
     params: &artifactory-params
       repo: libs-snapshot-local
@@ -141,7 +141,7 @@ jobs:
       privileged: true
       timeout: 30m
       image: spring-cloud-skipper-ci-image
-      file: git-repo/acceptance-tests/ci/tasks/build-skipper-server-with-drivers102.yml
+      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers102.yml
   - put: artifactory-repo
     params: &artifactory-params
       repo: libs-snapshot-local
