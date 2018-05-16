@@ -17,4 +17,4 @@ run:
 params:
   ARTIFACTORY_USERNAME: ((artifactory-username))
   ARTIFACTORY_PASSWORD: ((artifactory-password))
-  BASE_PATH: ((base-path))
+  BASE_PATH: acceptance-tests
