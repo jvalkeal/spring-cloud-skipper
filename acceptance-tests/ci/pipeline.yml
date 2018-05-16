@@ -10,13 +10,13 @@ resources:
   source:
     uri: ((github-repo))
     branch: ((branch))
-    ignore_paths: ["acceptance-tests/ci/images/*"]
+    ignore_paths: ["((base-path))/ci/images/*"]
 - name: ci-images-git-repo
   type: git
   source:
     uri: ((github-repo))
     branch: ((branch))
-    paths: ["acceptance-tests/ci/images/*"]
+    paths: ["((base-path))/ci/images/*"]
 
 - name: artifactory-repo
   type: artifactory-resource

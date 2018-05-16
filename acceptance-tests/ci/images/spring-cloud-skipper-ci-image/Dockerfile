@@ -30,10 +30,7 @@ ARG BRANCH
 ARG GITHUB_REPO_RAW
 ARG BASE_PATH
 
-ADD $GITHUB_REPO_RAW/$BRANCH/$BASE_PATH/images/docker-lib.sh /docker-lib.sh
-#ADD $GITHUB_REPO_RAW/$BRANCH/acceptance-tests/ci/images/docker-lib.sh /docker-lib.sh
-#ADD https://raw.githubusercontent.com/jvalkeal/spring-cloud-skipper/$BRANCH/acceptance-tests/ci/images/docker-lib.sh /docker-lib.sh
-#ADD https://raw.githubusercontent.com/spring-cloud/spring-cloud-skipper/master/acceptance-tests/ci/images/docker-lib.sh /docker-lib.sh
+ADD $GITHUB_REPO_RAW/$BRANCH/$BASE_PATH/ci/images/docker-lib.sh /docker-lib.sh
 
 ENTRYPOINT [ \
     "switch", \
