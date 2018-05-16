@@ -69,6 +69,8 @@ jobs:
       timeout: 90m
       image: spring-cloud-skipper-ci-image
       file: git-repo/((base-path))/ci/tasks/build-project.yml
+      params:
+        BASE_PATH: ((base-path))
       on_failure:
         aggregate:
         - put: acceptance-tests-reports
@@ -117,6 +119,8 @@ jobs:
       timeout: 30m
       image: spring-cloud-skipper-ci-image
       file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers101.yml
+      params:
+        BASE_PATH: ((base-path))
   - put: artifactory-repo
     params: &artifactory-params
       repo: libs-snapshot-local
@@ -144,6 +148,8 @@ jobs:
       timeout: 30m
       image: spring-cloud-skipper-ci-image
       file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers102.yml
+      params:
+        BASE_PATH: ((base-path))
   - put: artifactory-repo
     params: &artifactory-params
       repo: libs-snapshot-local
