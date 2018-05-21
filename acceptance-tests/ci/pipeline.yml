@@ -65,6 +65,14 @@ jobs:
   - get: spring-cloud-skipper-ci-image
   - get: git-repo
     trigger: true
+  - aggregate:
+    - get: build-skipper-server-with-drivers100
+    - get: build-skipper-server-with-drivers101
+    - get: build-skipper-server-with-drivers102
+    - get: build-skipper-server-with-drivers103
+    - get: build-skipper-server-with-drivers104
+    - get: build-skipper-server-with-drivers105
+    - get: build-skipper-server-with-drivers110
   - do:
     - task: build-project
       privileged: true
