@@ -4,6 +4,7 @@ resource_types:
   source:
     repository: springio/artifactory-resource
     tag: 0.0.3
+
 resources:
 - name: git-repo
   type: git
@@ -11,6 +12,7 @@ resources:
     uri: ((github-repo))
     branch: ((branch))
     ignore_paths: ["((base-path))/ci/images/*"]
+
 - name: ci-images-git-repo
   type: git
   source:
@@ -164,11 +166,134 @@ jobs:
       exclude:
         - "**/*.xml"
 
+- name: build-skipper-server-with-drivers103
+  serial: true
+  public: false
+  plan:
+  - get: spring-cloud-skipper-ci-image
+  - get: git-repo
+    trigger: false
+  - do:
+    - task: build-skipper-server-with-drivers
+      privileged: true
+      timeout: 30m
+      image: spring-cloud-skipper-ci-image
+      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers103.yml
+      params:
+        BASE_PATH: ((base-path))
+  - put: artifactory-repo
+    params: &artifactory-params
+      repo: libs-snapshot-local
+      folder: distribution-repository
+      strip_snapshot_timestamps: false
+      build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+      build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
+      disable_checksum_uploads: true
+      include:
+        - "**/*.jar"
+        - "**/*.pom"
+      exclude:
+        - "**/*.xml"
+
+- name: build-skipper-server-with-drivers104
+  serial: true
+  public: false
+  plan:
+  - get: spring-cloud-skipper-ci-image
+  - get: git-repo
+    trigger: false
+  - do:
+    - task: build-skipper-server-with-drivers
+      privileged: true
+      timeout: 30m
+      image: spring-cloud-skipper-ci-image
+      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers104.yml
+      params:
+        BASE_PATH: ((base-path))
+  - put: artifactory-repo
+    params: &artifactory-params
+      repo: libs-snapshot-local
+      folder: distribution-repository
+      strip_snapshot_timestamps: false
+      build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+      build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
+      disable_checksum_uploads: true
+      include:
+        - "**/*.jar"
+        - "**/*.pom"
+      exclude:
+        - "**/*.xml"
+
+- name: build-skipper-server-with-drivers105
+  serial: true
+  public: false
+  plan:
+  - get: spring-cloud-skipper-ci-image
+  - get: git-repo
+    trigger: false
+  - do:
+    - task: build-skipper-server-with-drivers
+      privileged: true
+      timeout: 30m
+      image: spring-cloud-skipper-ci-image
+      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers105.yml
+      params:
+        BASE_PATH: ((base-path))
+  - put: artifactory-repo
+    params: &artifactory-params
+      repo: libs-snapshot-local
+      folder: distribution-repository
+      strip_snapshot_timestamps: false
+      build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+      build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
+      disable_checksum_uploads: true
+      include:
+        - "**/*.jar"
+        - "**/*.pom"
+      exclude:
+        - "**/*.xml"
+
+- name: build-skipper-server-with-drivers110
+  serial: true
+  public: false
+  plan:
+  - get: spring-cloud-skipper-ci-image
+  - get: git-repo
+    trigger: false
+  - do:
+    - task: build-skipper-server-with-drivers
+      privileged: true
+      timeout: 30m
+      image: spring-cloud-skipper-ci-image
+      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers110.yml
+      params:
+        BASE_PATH: ((base-path))
+  - put: artifactory-repo
+    params: &artifactory-params
+      repo: libs-snapshot-local
+      folder: distribution-repository
+      strip_snapshot_timestamps: false
+      build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+      build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
+      disable_checksum_uploads: true
+      include:
+        - "**/*.jar"
+        - "**/*.pom"
+      exclude:
+        - "**/*.xml"
+
 groups:
 - name: "Tests"
   jobs: ["acceptance-tests"]
 - name: "CI-Images"
   jobs: ["spring-cloud-skipper-ci-images"]
 - name: "CI-Apps"
-  jobs: ["build-skipper-server-with-drivers100", "build-skipper-server-with-drivers101", "build-skipper-server-with-drivers102"]
+  jobs:
+    - "build-skipper-server-with-drivers100"
+    - "build-skipper-server-with-drivers101"
+    - "build-skipper-server-with-drivers102"
+    - "build-skipper-server-with-drivers103"
+    - "build-skipper-server-with-drivers104"
+    - "build-skipper-server-with-drivers105"
+    - "build-skipper-server-with-drivers110"
 
