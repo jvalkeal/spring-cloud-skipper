@@ -63,16 +63,19 @@ jobs:
   public: false
   plan:
   - get: spring-cloud-skipper-ci-image
+    trigger: true
+    passed:
+      - "spring-cloud-skipper-ci-images"
   - get: git-repo
     trigger: true
-  - aggregate:
-    - get: build-skipper-server-with-drivers100
-    - get: build-skipper-server-with-drivers101
-    - get: build-skipper-server-with-drivers102
-    - get: build-skipper-server-with-drivers103
-    - get: build-skipper-server-with-drivers104
-    - get: build-skipper-server-with-drivers105
-    - get: build-skipper-server-with-drivers110
+    passed:
+      - "build-skipper-server-with-drivers100"
+      - "build-skipper-server-with-drivers101"
+      - "build-skipper-server-with-drivers102"
+      - "build-skipper-server-with-drivers103"
+      - "build-skipper-server-with-drivers104"
+      - "build-skipper-server-with-drivers105"
+      - "build-skipper-server-with-drivers110"
   - do:
     - task: build-project
       privileged: true
@@ -92,8 +95,11 @@ jobs:
   public: false
   plan:
   - get: spring-cloud-skipper-ci-image
+    trigger: true
+    passed:
+      - "spring-cloud-skipper-ci-images"
   - get: git-repo
-    trigger: false
+    trigger: true
   - do:
     - task: build-skipper-server-with-drivers
       privileged: true
@@ -121,8 +127,11 @@ jobs:
   public: false
   plan:
   - get: spring-cloud-skipper-ci-image
+    trigger: true
+    passed:
+      - "spring-cloud-skipper-ci-images"
   - get: git-repo
-    trigger: false
+    trigger: true
   - do:
     - task: build-skipper-server-with-drivers
       privileged: true
@@ -150,8 +159,11 @@ jobs:
   public: false
   plan:
   - get: spring-cloud-skipper-ci-image
+    trigger: true
+    passed:
+      - "spring-cloud-skipper-ci-images"
   - get: git-repo
-    trigger: false
+    trigger: true
   - do:
     - task: build-skipper-server-with-drivers
       privileged: true
@@ -179,8 +191,11 @@ jobs:
   public: false
   plan:
   - get: spring-cloud-skipper-ci-image
+    trigger: true
+    passed:
+      - "spring-cloud-skipper-ci-images"
   - get: git-repo
-    trigger: false
+    trigger: true
   - do:
     - task: build-skipper-server-with-drivers
       privileged: true
@@ -208,8 +223,11 @@ jobs:
   public: false
   plan:
   - get: spring-cloud-skipper-ci-image
+    trigger: true
+    passed:
+      - "spring-cloud-skipper-ci-images"
   - get: git-repo
-    trigger: false
+    trigger: true
   - do:
     - task: build-skipper-server-with-drivers
       privileged: true
@@ -237,8 +255,11 @@ jobs:
   public: false
   plan:
   - get: spring-cloud-skipper-ci-image
+    trigger: true
+    passed:
+      - "spring-cloud-skipper-ci-images"
   - get: git-repo
-    trigger: false
+    trigger: true
   - do:
     - task: build-skipper-server-with-drivers
       privileged: true
@@ -266,8 +287,11 @@ jobs:
   public: false
   plan:
   - get: spring-cloud-skipper-ci-image
+    trigger: true
+    passed:
+      - "spring-cloud-skipper-ci-images"
   - get: git-repo
-    trigger: false
+    trigger: true
   - do:
     - task: build-skipper-server-with-drivers
       privileged: true
@@ -290,7 +314,7 @@ jobs:
       exclude:
         - "**/*.xml"
 
-groups:
+xgroups:
 - name: "Tests"
   jobs: ["acceptance-tests"]
 - name: "CI-Images"
