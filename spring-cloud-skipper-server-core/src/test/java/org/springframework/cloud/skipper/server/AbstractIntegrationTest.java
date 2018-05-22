@@ -140,6 +140,7 @@ public abstract class AbstractIntegrationTest extends AbstractAssertReleaseDeplo
 					.status(releaseRepository.findByNameAndVersion(releaseName, releaseVersion));
 			Info info = release.getInfo();
 
+			logger.info("Info = " + info);
 			logger.info("Status = " + info.getStatus());
 			return info.getStatus().getStatusCode().equals(StatusCode.DEPLOYED) &&
 					allAppsDeployed(info.getStatus().getAppStatusList());
