@@ -75,9 +75,10 @@ public class HandleHealthCheckStep {
 
 	private void updateReplacingReleaseState(Release replacingRelease, boolean rollback) {
 		// Update Status in DB
-		Status status = new Status();
-		status.setStatusCode(StatusCode.DEPLOYED);
-		replacingRelease.getInfo().setStatus(status);
+		//Status status = new Status();
+		//status.setStatusCode(StatusCode.DEPLOYED);
+		//replacingRelease.getInfo().setStatus(status);
+		replacingRelease.getInfo().getStatus().setStatusCode(StatusCode.DEPLOYED);
 		replacingRelease.getInfo().setDescription(rollback ? "Rollback complete" : "Upgrade complete");
 		this.releaseRepository.save(replacingRelease);
 		logger.info("Release {}-v{} has been DEPLOYED", replacingRelease.getName(),

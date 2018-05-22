@@ -449,6 +449,7 @@ public class ReleaseServiceTests extends AbstractIntegrationTest {
 		this.appDeployerDataRepository.findByReleaseNameAndReleaseVersionRequired(releaseName, 2);
 
 		// Delete
+		logger.info("Deleting the release with name " + releaseName);
 		delete(releaseName);
 
 		Release deletedRelease = releaseRepository.findByNameAndVersion(releaseName, 2);
