@@ -11,7 +11,21 @@ resources:
   source:
     uri: ((github-repo))
     branch: ((branch))
-    ignore_paths: ["((base-path))/ci/images/*"]
+    ignore_paths: ["((base-path))/*"]
+
+- name: ci-git-repo
+  type: git
+  source:
+    uri: ((github-repo))
+    branch: ((branch))
+    paths: ["((base-path))/ci/*"]
+
+- name: ci-apps-git-repo
+  type: git
+  source:
+    uri: ((github-repo))
+    branch: ((branch))
+    paths: ["((base-path))/custom-apps/*"]
 
 - name: ci-images-git-repo
   type: git
@@ -94,14 +108,17 @@ jobs:
     trigger: true
     passed:
       - "spring-cloud-skipper-ci-images"
-  - get: git-repo
+  - get: ci-git-repo
+  - get: ci-apps-git-repo
     trigger: true
   - aggregate:
     - task: build-skipper-server-with-drivers100
       privileged: true
       timeout: 30m
       image: spring-cloud-skipper-ci-image
-      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      file: ci-git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
         APP_VERSION: 100
@@ -109,7 +126,9 @@ jobs:
       privileged: true
       timeout: 30m
       image: spring-cloud-skipper-ci-image
-      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      file: ci-git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
         APP_VERSION: 101
@@ -117,7 +136,9 @@ jobs:
       privileged: true
       timeout: 30m
       image: spring-cloud-skipper-ci-image
-      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      file: ci-git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
         APP_VERSION: 102
@@ -125,7 +146,9 @@ jobs:
       privileged: true
       timeout: 30m
       image: spring-cloud-skipper-ci-image
-      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      file: ci-git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
         APP_VERSION: 103
@@ -133,7 +156,9 @@ jobs:
       privileged: true
       timeout: 30m
       image: spring-cloud-skipper-ci-image
-      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      file: ci-git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
         APP_VERSION: 104
@@ -141,7 +166,9 @@ jobs:
       privileged: true
       timeout: 30m
       image: spring-cloud-skipper-ci-image
-      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      file: ci-git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
         APP_VERSION: 105
@@ -149,7 +176,9 @@ jobs:
       privileged: true
       timeout: 30m
       image: spring-cloud-skipper-ci-image
-      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      file: ci-git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
         APP_VERSION: 110
