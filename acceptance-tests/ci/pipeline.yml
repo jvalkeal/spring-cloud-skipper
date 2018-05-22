@@ -20,6 +20,13 @@ resources:
     branch: ((branch))
     paths: ["((base-path))/ci/images/*"]
 
+- name: ci-apps-git-repo
+  type: git
+  source:
+    uri: ((github-repo))
+    branch: ((branch))
+    paths: ["((base-path))/custom-apps/*"]
+
 - name: artifactory-repo
   type: artifactory-resource
   source:
@@ -98,7 +105,7 @@ jobs:
     trigger: true
     passed:
       - "spring-cloud-skipper-ci-images"
-  - get: git-repo
+  - get: ci-apps-git-repo
     trigger: true
   - do:
     - task: build-skipper-server-with-drivers
@@ -106,6 +113,8 @@ jobs:
       timeout: 30m
       image: spring-cloud-skipper-ci-image
       file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers100.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
   - put: artifactory-repo
@@ -130,7 +139,7 @@ jobs:
     trigger: true
     passed:
       - "spring-cloud-skipper-ci-images"
-  - get: git-repo
+  - get: ci-apps-git-repo
     trigger: true
   - do:
     - task: build-skipper-server-with-drivers
@@ -138,6 +147,8 @@ jobs:
       timeout: 30m
       image: spring-cloud-skipper-ci-image
       file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers101.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
   - put: artifactory-repo
@@ -162,7 +173,7 @@ jobs:
     trigger: true
     passed:
       - "spring-cloud-skipper-ci-images"
-  - get: git-repo
+  - get: ci-apps-git-repo
     trigger: true
   - do:
     - task: build-skipper-server-with-drivers
@@ -170,6 +181,8 @@ jobs:
       timeout: 30m
       image: spring-cloud-skipper-ci-image
       file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers102.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
   - put: artifactory-repo
@@ -194,7 +207,7 @@ jobs:
     trigger: true
     passed:
       - "spring-cloud-skipper-ci-images"
-  - get: git-repo
+  - get: ci-apps-git-repo
     trigger: true
   - do:
     - task: build-skipper-server-with-drivers
@@ -202,6 +215,8 @@ jobs:
       timeout: 30m
       image: spring-cloud-skipper-ci-image
       file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers103.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
   - put: artifactory-repo
@@ -226,7 +241,7 @@ jobs:
     trigger: true
     passed:
       - "spring-cloud-skipper-ci-images"
-  - get: git-repo
+  - get: ci-apps-git-repo
     trigger: true
   - do:
     - task: build-skipper-server-with-drivers
@@ -234,6 +249,8 @@ jobs:
       timeout: 30m
       image: spring-cloud-skipper-ci-image
       file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers104.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
   - put: artifactory-repo
@@ -258,7 +275,7 @@ jobs:
     trigger: true
     passed:
       - "spring-cloud-skipper-ci-images"
-  - get: git-repo
+  - get: ci-apps-git-repo
     trigger: true
   - do:
     - task: build-skipper-server-with-drivers
@@ -266,6 +283,8 @@ jobs:
       timeout: 30m
       image: spring-cloud-skipper-ci-image
       file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers105.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
   - put: artifactory-repo
@@ -290,7 +309,7 @@ jobs:
     trigger: true
     passed:
       - "spring-cloud-skipper-ci-images"
-  - get: git-repo
+  - get: ci-apps-git-repo
     trigger: true
   - do:
     - task: build-skipper-server-with-drivers
@@ -298,6 +317,8 @@ jobs:
       timeout: 30m
       image: spring-cloud-skipper-ci-image
       file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers110.yml
+      input_mapping:
+        git-repo: ci-apps-git-repo
       params:
         BASE_PATH: ((base-path))
   - put: artifactory-repo
