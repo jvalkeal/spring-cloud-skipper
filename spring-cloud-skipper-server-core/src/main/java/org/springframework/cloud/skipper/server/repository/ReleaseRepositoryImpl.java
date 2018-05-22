@@ -18,6 +18,8 @@ package org.springframework.cloud.skipper.server.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.ReleaseNotFoundException;
 import org.springframework.cloud.skipper.domain.Release;
@@ -29,6 +31,8 @@ import org.springframework.cloud.skipper.domain.StatusCode;
  */
 public class ReleaseRepositoryImpl implements ReleaseRepositoryCustom {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@Autowired
 	private ReleaseRepository releaseRepository;
 
@@ -80,7 +84,16 @@ public class ReleaseRepositoryImpl implements ReleaseRepositoryCustom {
 
 	@Override
 	public Release findByNameAndVersion(String releaseName, int version) {
+
+		logger.info("findByNameAndVersion debug start");
+		Iterable<Release> xxx = this.releaseRepository.findAll();
+		for (Release release : xxx) {
+			logger.info("findByNameAndVersion Got release id {}, objversion {}, version {}", release.getId(), release.getObjectVersion(), release.getVersion());
+		}
+		logger.info("findByNameAndVersion debug end");		
+				
 		Iterable<Release> releases = this.releaseRepository.findAll();
+		
 
 		Release matchingRelease = null;
 		for (Release release : releases) {

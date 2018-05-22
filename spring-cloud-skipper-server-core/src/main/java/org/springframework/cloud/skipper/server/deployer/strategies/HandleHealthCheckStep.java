@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.cloud.skipper.domain.Info;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.domain.Status;
 import org.springframework.cloud.skipper.domain.StatusCode;
@@ -83,7 +83,13 @@ public class HandleHealthCheckStep {
 		
 		logger.info("About to save release id {}, objversion {}, version {}", replacingRelease.getId(), replacingRelease.getObjectVersion(), replacingRelease.getVersion());
 		
-		this.releaseRepository.save(replacingRelease);
+		Release xxx = this.releaseRepository.save(replacingRelease);
+		logger.info("GOT to save release id {}, objversion {}, version {}", xxx.getId(), xxx.getObjectVersion(), xxx.getVersion());
+		Info info = xxx.getInfo();
+		logger.info("XXX Info = " + info);
+		logger.info("XXX Status = " + info.getStatus());
+		
+		
 		logger.info("Release {}-v{} has been DEPLOYED", replacingRelease.getName(),
 				replacingRelease.getVersion());
 		logger.info("Apps in release {}-v{} are healthy.", replacingRelease.getName(),
