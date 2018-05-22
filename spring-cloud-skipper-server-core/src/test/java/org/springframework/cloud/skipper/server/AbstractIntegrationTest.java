@@ -115,6 +115,7 @@ public abstract class AbstractIntegrationTest extends AbstractAssertReleaseDeplo
 					try {
 						logger.info("After test clean up, deleting release " + release.getName());
 						releaseService.delete(release.getName());
+						logger.info("After test clean up, deleting release " + release.getName() + " ...done");
 					}
 					catch (Exception e) {
 						logger.error(
