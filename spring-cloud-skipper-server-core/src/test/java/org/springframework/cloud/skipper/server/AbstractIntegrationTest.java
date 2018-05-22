@@ -138,6 +138,10 @@ public abstract class AbstractIntegrationTest extends AbstractAssertReleaseDeplo
 			// retrieve status from underlying AppDeployer
 			Release release = this.releaseManager
 					.status(releaseRepository.findByNameAndVersion(releaseName, releaseVersion));
+			
+			logger.info("Got release id {}, objversion {}, version {}", release.getId(), release.getObjectVersion(), release.getVersion());
+			
+			
 			Info info = release.getInfo();
 
 			logger.info("Info = " + info);

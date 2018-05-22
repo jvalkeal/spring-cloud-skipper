@@ -80,6 +80,9 @@ public class HandleHealthCheckStep {
 		//replacingRelease.getInfo().setStatus(status);
 		replacingRelease.getInfo().getStatus().setStatusCode(StatusCode.DEPLOYED);
 		replacingRelease.getInfo().setDescription(rollback ? "Rollback complete" : "Upgrade complete");
+		
+		logger.info("About to save release id {}, objversion {}, version {}", replacingRelease.getId(), replacingRelease.getObjectVersion(), replacingRelease.getVersion());
+		
 		this.releaseRepository.save(replacingRelease);
 		logger.info("Release {}-v{} has been DEPLOYED", replacingRelease.getName(),
 				replacingRelease.getVersion());
