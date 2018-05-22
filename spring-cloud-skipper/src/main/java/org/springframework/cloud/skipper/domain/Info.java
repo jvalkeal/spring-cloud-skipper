@@ -107,4 +107,10 @@ public class Info extends AbstractEntity {
 		info.setDescription(description);
 		return info;
 	}
+
+	@Override
+	public String toString() {
+		return "Info [firstDeployed=" + firstDeployed + ", lastDeployed=" + lastDeployed + ", deleted=" + deleted
+				+ ", description=" + description + "]";
+	}
 }
