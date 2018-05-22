@@ -105,9 +105,10 @@ jobs:
       privileged: true
       timeout: 30m
       image: spring-cloud-skipper-ci-image
-      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers100.yml
+      file: git-repo/((base-path))/ci/tasks/build-skipper-server-with-drivers.yml
       params:
         BASE_PATH: ((base-path))
+        APP_VERSION: 100
   - put: artifactory-repo
     params: &artifactory-params
       repo: libs-snapshot-local
