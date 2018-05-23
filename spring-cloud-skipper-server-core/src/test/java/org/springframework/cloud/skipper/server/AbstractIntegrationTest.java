@@ -137,16 +137,25 @@ public abstract class AbstractIntegrationTest extends AbstractAssertReleaseDeplo
 		try {
 			logger.info("Checking status of release={} version={}", releaseName, releaseVersion);
 			// retrieve status from underlying AppDeployer
-			Release release = this.releaseManager
-					.status(releaseRepository.findByNameAndVersion(releaseName, releaseVersion));
 			
-			logger.info("Got release id {}, objversion {}, version {}", release.getId(), release.getObjectVersion(), release.getVersion());
+			Release release2 = releaseRepository.findByNameAndVersion(releaseName, releaseVersion);
+			Release release = this.releaseManager
+					.status(release2);
+
+			//Release release = this.releaseManager
+			//		.status(releaseRepository.findByNameAndVersion(releaseName, releaseVersion));
+			
+			logger.info("Got1 release2 id {}, objversion {}, version {}", release2.getId(), release2.getObjectVersion(), release2.getVersion());
+			logger.info("Got2 release id {}, objversion {}, version {}", release.getId(), release.getObjectVersion(), release.getVersion());
 			
 			
 			Info info = release.getInfo();
+			Info info2 = release2.getInfo();
 
-			logger.info("Info = " + info);
-			logger.info("Status = " + info.getStatus());
+			logger.info("Info1 = " + info);
+			logger.info("Status1 = " + info.getStatus());
+			logger.info("Info2 = " + info2);
+			logger.info("Status2 = " + info2.getStatus());
 			return info.getStatus().getStatusCode().equals(StatusCode.DEPLOYED) &&
 					allAppsDeployed(info.getStatus().getAppStatusList());
 		}
