@@ -82,6 +82,7 @@ public class HandleHealthCheckStep {
 		replacingRelease.getInfo().setDescription(rollback ? "Rollback complete" : "Upgrade complete");
 		
 		logger.info("About to save release id {}, objversion {}, version {}", replacingRelease.getId(), replacingRelease.getObjectVersion(), replacingRelease.getVersion());
+		logger.info("releaseRepository {} {}", this.releaseRepository.hashCode(), this.releaseRepository);
 		
 		Release xxx = this.releaseRepository.save(replacingRelease);
 		logger.info("GOT to save release id {}, objversion {}, version {}", xxx.getId(), xxx.getObjectVersion(), xxx.getVersion());
