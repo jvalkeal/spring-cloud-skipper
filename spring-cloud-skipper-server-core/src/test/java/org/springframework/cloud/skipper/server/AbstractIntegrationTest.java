@@ -65,7 +65,7 @@ import static org.springframework.cloud.skipper.server.AbstractIntegrationTest.T
  * @author Glenn Renfro
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = TestConfig.class, properties = {"spring.cloud.skipper.server.enableReleaseStateUpdateService=false"})
+@SpringBootTest(classes = TestConfig.class, properties = {"spring.cloud.skipper.server.enableReleaseStateUpdateService=false", "spring.cloud.deployer.local.shutdownTimeout=0"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public abstract class AbstractIntegrationTest extends AbstractAssertReleaseDeployedTest {
 
