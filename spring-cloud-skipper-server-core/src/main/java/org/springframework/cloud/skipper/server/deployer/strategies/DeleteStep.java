@@ -81,7 +81,11 @@ public class DeleteStep {
 				if (applicationNamesToDelete.contains(appNameAndDeploymentId.getKey())) {
 					AppStatus appStatus = appDeployer.status(appNameAndDeploymentId.getValue());
 					if (appStatus.getState().equals(DeploymentState.deployed)) {
-						appDeployer.undeploy(appNameAndDeploymentId.getValue());
+						try {
+							appDeployer.undeploy(appNameAndDeploymentId.getValue());							
+						} catch (Exception e) {
+							logger.error("XXXX crap", e);
+						}
 					}
 					else {
 						logger.warn("For Release name {}, did not undeploy existing app {} as its status is not "
