@@ -61,7 +61,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  * @author Mark Pollack
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = TestConfig.class)
+@SpringBootTest(classes = TestConfig.class, properties = {"spring.cloud.skipper.server.enableReleaseStateUpdateService=false"})
 @AutoConfigureMockMvc
 public abstract class AbstractMockMvcTests extends AbstractAssertReleaseDeployedTest {
 
