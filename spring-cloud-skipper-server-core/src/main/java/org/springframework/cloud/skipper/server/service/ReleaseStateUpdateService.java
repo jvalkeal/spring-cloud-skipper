@@ -64,13 +64,13 @@ public class ReleaseStateUpdateService {
 	@Scheduled(initialDelay = 5000, fixedRate = 5000)
 	@Transactional
 	public synchronized void update() {
-		log.debug("Scheduled update state method running...");
+		log.info("Scheduled update state method running...");
 		long now = System.currentTimeMillis();
 		boolean fullPoll = now > this.nextFullPoll;
 		if (fullPoll) {
 			// setup next full poll
 			this.nextFullPoll = getNextFullPoll();
-			log.debug("Setup next full poll at {}", new Date(this.nextFullPoll));
+			log.info("Setup next full poll at {}", new Date(this.nextFullPoll));
 		}
 		Iterable<Release> releases = this.releaseRepository.findLatestDeployedOrFailed();
 		for (Release release : releases) {
@@ -78,13 +78,13 @@ public class ReleaseStateUpdateService {
 			if (checkInfo(info)) {
 				// poll new apps every time or we do full poll anyway
 				boolean isNewApp = (info.getLastDeployed().getTime() > (now - 120000));
-				log.debug("Considering updating state for {}-v{}", release.getName(), release.getVersion());
-				log.debug("fullPoll = {}, isNewApp = {}", fullPoll, isNewApp);
+				log.info("Considering updating state for {}-v{}", release.getName(), release.getVersion());
+				log.info("fullPoll = {}, isNewApp = {}", fullPoll, isNewApp);
 				boolean poll = fullPoll || (isNewApp);
 				if (poll) {
 					try {
 						release = this.releaseManager.status(release);
-						log.debug("New Release state {} {}", release.getName(), release.getInfo().getStatus(),
+						log.info("New Release state {} {}", release.getName(), release.getInfo().getStatus(),
 								release.getInfo().getStatus() != null
 										? release.getInfo().getStatus().getPlatformStatusPrettyPrint()
 										: "");
@@ -96,7 +96,7 @@ public class ReleaseStateUpdateService {
 					}
 				}
 				else {
-					log.debug("Not updating state for {}-v{}", release.getName(), release.getVersion());
+					log.info("Not updating state for {}-v{}", release.getName(), release.getVersion());
 				}
 			}
 		}
