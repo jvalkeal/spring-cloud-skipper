@@ -10,7 +10,7 @@ spring:
           local:
             accounts:
               localDev:
-                shutdownTimeout: 60
+                shutdownTimeout: 0
                 javaOpts: "-Dtest=foo"
               localDevDebug:
                 javaOpts: "-Xdebug"
