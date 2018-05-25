@@ -44,6 +44,7 @@ import org.springframework.cloud.skipper.server.repository.AppDeployerDataReposi
 import org.springframework.cloud.skipper.server.repository.PackageMetadataRepository;
 import org.springframework.cloud.skipper.server.repository.RepositoryRepository;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import static junit.framework.TestCase.fail;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @author Christian Tzolov
  */
 @ActiveProfiles("repo-test")
+@TestPropertySource(properties = {"spring.cloud.deployer.local.shutdownTimeout=0"})
 public class ReleaseServiceTests extends AbstractIntegrationTest {
 
 	private final Logger logger = LoggerFactory.getLogger(ReleaseServiceTests.class);

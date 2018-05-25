@@ -6,4 +6,4 @@ spring:
           local:
             accounts:
               default:
-                shutdownTimeout: 0
+                shutdownTimeout: 60

@@ -50,7 +50,13 @@ public class SkipperServerPlatformConfiguration {
 		}
 		for (Map.Entry<String, LocalDeployerProperties> entry : localDeployerPropertiesMap
 				.entrySet()) {
-			LocalAppDeployer localAppDeployer = new LocalAppDeployer(entry.getValue());
+			
+			LocalDeployerProperties value = entry.getValue();
+			value.setShutdownTimeout(0);
+			
+			
+			LocalAppDeployer localAppDeployer = new LocalAppDeployer(value);
+			// LocalAppDeployer localAppDeployer = new LocalAppDeployer(entry.getValue());
 			Deployer deployer = new Deployer(entry.getKey(), "local", localAppDeployer);
 			deployer.setDescription(prettyPrintLocalDeployerProperties(entry.getValue()));
 			deployers.add(deployer);
