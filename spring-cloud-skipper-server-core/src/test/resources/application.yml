@@ -45,5 +45,6 @@ logging:
     org.springframework.integration: 'WARN'
     org.springframework.boot: 'WARN'
     org.hibernate: 'WARN'
+    org.springframework.cloud.deployer.spi.local: 'DEBUG'
     # The following INFO is to log the generated password when using basic security
     org.springframework.boot.autoconfigure.security: 'INFO'

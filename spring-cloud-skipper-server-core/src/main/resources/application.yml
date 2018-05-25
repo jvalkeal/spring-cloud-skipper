@@ -154,5 +154,6 @@ logging:
     org.springframework.boot.autoconfigure.security: 'INFO'
     org.springframework.cloud.skipper: 'INFO'
     org.springframework.statemachine: 'INFO'
+    org.springframework.cloud.deployer.spi.local: 'DEBUG'
 flyway:
   locations: /db/migration/{vendor}
