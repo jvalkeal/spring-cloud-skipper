@@ -73,21 +73,21 @@ public class OAuth2TestServer {
 		return Collections.singletonMap("name", principal.getName());
 	}
 
-	@Configuration
-	@EnableAuthorizationServer
-	protected static class MyOAuth2AuthorizationServerConfiguration extends OAuth2AuthorizationServerConfiguration {
-		public MyOAuth2AuthorizationServerConfiguration(BaseClientDetails details,
-				AuthenticationManager authenticationManager, ObjectProvider<TokenStore> tokenStore,
-				ObjectProvider<AccessTokenConverter> tokenConverter, AuthorizationServerProperties properties) {
-			super(details, authenticationManager, tokenStore, tokenConverter, properties);
-		}
-
-		@Override
-		public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-			super.configure(security);
-			security.allowFormAuthenticationForClients();
-		}
-	}
+//	@Configuration
+//	@EnableAuthorizationServer
+//	protected static class MyOAuth2AuthorizationServerConfiguration extends OAuth2AuthorizationServerConfiguration {
+//		public MyOAuth2AuthorizationServerConfiguration(BaseClientDetails details,
+//				AuthenticationManager authenticationManager, ObjectProvider<TokenStore> tokenStore,
+//				ObjectProvider<AccessTokenConverter> tokenConverter, AuthorizationServerProperties properties) {
+//			super(details, authenticationManager, tokenStore, tokenConverter, properties);
+//		}
+//
+//		@Override
+//		public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+//			super.configure(security);
+//			security.allowFormAuthenticationForClients();
+//		}
+//	}
 
 	@Configuration
 	@EnableResourceServer

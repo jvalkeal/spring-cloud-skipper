@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Import;
  * @author Gunnar Hillert
  */
 @Configuration
-@Import({ SkipperOAuthSecurityConfiguration.class })
+//@Import({ SkipperOAuthSecurityConfiguration.class })
 public class SecurityConfiguration {
 
 }

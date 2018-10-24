@@ -33,7 +33,9 @@ import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoCon
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
+//import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.skipper.domain.CancelResponse;
@@ -46,6 +48,7 @@ import org.springframework.cloud.skipper.server.config.SkipperServerPlatformConf
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.statemachine.boot.autoconfigure.StateMachineJpaRepositoriesAutoConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -149,12 +152,13 @@ public abstract class AbstractMockMvcTests extends AbstractAssertReleaseDeployed
 	}
 
 	@Configuration
-	@ImportAutoConfiguration(classes = { JacksonAutoConfiguration.class, EmbeddedDataSourceConfiguration.class,
+	@ImportAutoConfiguration(classes = { SecurityAutoConfiguration.class, JacksonAutoConfiguration.class, EmbeddedDataSourceConfiguration.class,
 			HibernateJpaAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class,
 			ErrorMvcAutoConfiguration.class, StateMachineJpaRepositoriesAutoConfiguration.class,
 			SkipperServerPlatformConfiguration.class })
 	@Import(SkipperServerConfiguration.class)
 	@EnableWebMvc
+//	@EnableWebSecurity
 	static class TestConfig {
 	}
 }
