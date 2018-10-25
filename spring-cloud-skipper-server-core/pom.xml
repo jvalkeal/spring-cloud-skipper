@@ -156,9 +156,19 @@
             <version>${spring-cloud-deployer.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.pivotal.spring.cloud</groupId>
+            <artifactId>spring-cloud-services-starter-config-client</artifactId>
+            <scope>runtime</scope>            
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-common-security-config-web</artifactId>
-            <version>${spring-common-security}</version>
+            <artifactId>spring-cloud-starter-common-security-config-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.jackson</groupId>
+                    <artifactId>jackson-mapper-asl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -179,11 +189,6 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-skipper</artifactId>
             <version>2.0.0.BUILD-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>io.pivotal.spring.cloud</groupId>
-            <artifactId>spring-cloud-services-starter-config-client</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.pivotal.spring.cloud</groupId>

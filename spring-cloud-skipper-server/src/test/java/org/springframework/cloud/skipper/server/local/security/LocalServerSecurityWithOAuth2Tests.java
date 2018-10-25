@@ -17,7 +17,6 @@
 package org.springframework.cloud.skipper.server.local.security;
 
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
@@ -37,14 +36,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * @author Gunnar Hillert
  */
-@Ignore
 public class LocalServerSecurityWithOAuth2Tests {
 
 	private final static OAuth2ServerResource oAuth2ServerResource = new OAuth2ServerResource();
 
 	private final static LocalSkipperResource localSkipperResource = new LocalSkipperResource(
 			new String[]{
-				"spring.config.location:classpath:/",
+				"classpath:/",
 				"classpath:/org/springframework/cloud/skipper/server/local/security/"
 			},
 			new String[]{
