@@ -106,7 +106,7 @@ public class SchemaGenerationTests extends AbstractIntegrationTest {
 		catch (HibernateException e) {
 			throw new IllegalStateException(e);
 		}
-        EnumSet<TargetType> targetTypes = EnumSet.of(TargetType.SCRIPT);
-        export.execute(targetTypes, SchemaExport.Action.BOTH, metadata.buildMetadata());
+		EnumSet<TargetType> targetTypes = EnumSet.of(TargetType.SCRIPT);
+		export.execute(targetTypes, SchemaExport.Action.BOTH, metadata.buildMetadata());
 	}
 }

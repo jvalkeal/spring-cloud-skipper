@@ -59,42 +59,42 @@ import org.springframework.web.bind.annotation.RestController;
 		})
 public class OAuth2TestServer {
 
-        public static void main(String[] args) {
-                new SpringApplicationBuilder(OAuth2TestServer.class)
-                                .properties("server.port:" + SocketUtils.findAvailableTcpPort()).build()
-                                .run("--debug --spring.config.location=classpath:/org/springframework/cloud/skipper/server/local"
-                                                + "/security/support/oauth2TestServerConfig.yml");
-        }
+	public static void main(String[] args) {
+		new SpringApplicationBuilder(OAuth2TestServer.class)
+				.properties("server.port:" + SocketUtils.findAvailableTcpPort()).build()
+				.run("--debug --spring.config.location=classpath:/org/springframework/cloud/skipper/server/local"
+						+ "/security/support/oauth2TestServerConfig.yml");
+	}
 
-        @RequestMapping({ "/user", "/me" })
-        public Map<String, String> user(Principal principal) {
-                return Collections.singletonMap("name", principal.getName());
-        }
+	@RequestMapping({ "/user", "/me" })
+	public Map<String, String> user(Principal principal) {
+		return Collections.singletonMap("name", principal.getName());
+	}
 
-        @Configuration
-        @EnableAuthorizationServer
-        protected static class MyOAuth2AuthorizationServerConfiguration extends OAuth2AuthorizationServerConfiguration {
-                public MyOAuth2AuthorizationServerConfiguration(BaseClientDetails details,
-                                AuthenticationConfiguration authenticationConfiguration, ObjectProvider<TokenStore> tokenStore,
-                                ObjectProvider<AccessTokenConverter> tokenConverter, AuthorizationServerProperties properties)
-                                throws Exception {
-                        super(details, authenticationConfiguration, tokenStore, tokenConverter, properties);
-                }
+	@Configuration
+	@EnableAuthorizationServer
+	protected static class MyOAuth2AuthorizationServerConfiguration extends OAuth2AuthorizationServerConfiguration {
+		public MyOAuth2AuthorizationServerConfiguration(BaseClientDetails details,
+				AuthenticationConfiguration authenticationConfiguration, ObjectProvider<TokenStore> tokenStore,
+				ObjectProvider<AccessTokenConverter> tokenConverter, AuthorizationServerProperties properties)
+				throws Exception {
+			super(details, authenticationConfiguration, tokenStore, tokenConverter, properties);
+		}
 
-                @Override
-                public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-                        super.configure(security);
-                        security.allowFormAuthenticationForClients();
-                }
-        }
+		@Override
+		public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+			super.configure(security);
+			security.allowFormAuthenticationForClients();
+		}
+	}
 
-        @Configuration
-        @EnableResourceServer
-        protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
-                @Override
-                public void configure(HttpSecurity http) throws Exception {
-                        http.antMatcher("/me").authorizeRequests().anyRequest().authenticated();
-                }
-        }
+	@Configuration
+	@EnableResourceServer
+	protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
+		@Override
+		public void configure(HttpSecurity http) throws Exception {
+			http.antMatcher("/me").authorizeRequests().anyRequest().authenticated();
+		}
+	}
 
 }

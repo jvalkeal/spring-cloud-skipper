@@ -56,9 +56,6 @@
         <jsonpath.version>2.2.0</jsonpath.version>
         <commons-lang.version>3.4</commons-lang.version>
         <equalverifier.version>2.4.1</equalverifier.version>
-<!--
-        <flyway.version>5.0.5</flyway.version>
--->
         <hibernate.jpa.version>1.0.0.Final</hibernate.jpa.version>
 
         <jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
@@ -216,13 +213,6 @@
                 <artifactId>zt-zip</artifactId>
                 <version>1.11</version>
             </dependency>
-<!--
-            <dependency>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-core</artifactId>
-                <version>${flyway.version}</version>
-            </dependency>
--->
             <dependency>
                 <groupId>io.projectreactor</groupId>
                 <artifactId>reactor-core</artifactId>
