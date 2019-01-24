@@ -49,13 +49,14 @@ public class SqlCommandsRunner {
 		SQLExceptionTranslator origExceptionTranslator = jdbcTemplate.getExceptionTranslator();
 
 		for (SqlCommand command : commands) {
-			if(!ObjectUtils.isEmpty(command.getSuppressedErrorCodes())) {
+			if (!ObjectUtils.isEmpty(command.getSuppressedErrorCodes())) {
 				jdbcTemplate.setExceptionTranslator(new SuppressSQLErrorCodesTranslator(command.getSuppressedErrorCodes()));
 			}
 			try {
 				logger.debug("executing command {}", command.getCommand());
 				jdbcTemplate.execute(command.getCommand());
-			} catch (SuppressDataAccessException e) {
+			}
+			catch (SuppressDataAccessException e) {
 				logger.debug("Suppressing error {}", e);
 			}
 			// restore original translator in case next command

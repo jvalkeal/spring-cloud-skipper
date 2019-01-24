@@ -17,6 +17,7 @@ package org.springframework.cloud.skipper.server.db.migration.postgresql;
 
 import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
+
 import org.springframework.cloud.skipper.server.db.migration.AbstractBaselineCallback;
 
 /**

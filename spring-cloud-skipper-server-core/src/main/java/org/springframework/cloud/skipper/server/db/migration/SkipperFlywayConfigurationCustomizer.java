@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.cloud.skipper.server.db.migration.db2.Db2BeforeBaseline;
