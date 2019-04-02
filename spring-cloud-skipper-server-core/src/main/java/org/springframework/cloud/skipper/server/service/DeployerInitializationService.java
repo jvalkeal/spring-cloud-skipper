@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the original author or authors.
+ * Copyright 2017-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +46,8 @@ public class DeployerInitializationService {
 
 	private final Logger logger = LoggerFactory
 			.getLogger(DeployerInitializationService.class);
-
-	private DeployerRepository deployerRepository;
-
+	private static final String KEY_PREFIX = "spring.cloud.deployer.";
+	private final DeployerRepository deployerRepository;
 	private final List<Platform> platforms;
 	private final DeployerConfigurationMetadataResolver resolver;
 
@@ -63,7 +62,6 @@ public class DeployerInitializationService {
 	@Transactional
 	public void initialize(ApplicationReadyEvent event) {
 		List<ConfigurationMetadataProperty> metadataProperties = this.resolver.resolve();
-		List<ConfigurationMetadataPropertyEntity> xxx = new ArrayList<>();
 		if (singleDeployerExists()) {
 			for (Platform platform : this.platforms) {
 				if (platform.getDeployers().size() == 1) {
@@ -101,7 +99,7 @@ public class DeployerInitializationService {
 
 	private List<ConfigurationMetadataPropertyEntity> createMetadataPropertyEntities(
 			List<ConfigurationMetadataProperty> metadataProperties, String type) {
-		String prefix = "spring.cloud.deployer." + type;
+		String prefix = KEY_PREFIX + type;
 		return metadataProperties.stream()
 			.filter(p -> p.getId().startsWith(prefix))
 			.map(ConfigurationMetadataPropertyEntity::new)

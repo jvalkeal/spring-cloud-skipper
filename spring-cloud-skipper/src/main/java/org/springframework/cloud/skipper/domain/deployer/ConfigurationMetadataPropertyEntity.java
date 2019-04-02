@@ -17,6 +17,13 @@ package org.springframework.cloud.skipper.domain.deployer;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 
+/**
+ * This entity class is used to extend boot's {@link ConfigurationMetadataProperty} so that
+ * we can add our own constructor and not to explicitly import entity classes from boot.
+ *
+ * @author Janne Valkealahti
+ *
+ */
 @SuppressWarnings("serial")
 public class ConfigurationMetadataPropertyEntity extends ConfigurationMetadataProperty {
 

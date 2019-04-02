@@ -24,6 +24,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepositoryJsonBuilder;
+import org.springframework.cloud.skipper.SkipperException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
@@ -31,6 +32,7 @@ import org.springframework.core.io.Resource;
 public class DeployerConfigurationMetadataResolver implements ApplicationContextAware {
 
 	private static final String CONFIGURATION_METADATA_PATTERN = "classpath*:/META-INF/spring-configuration-metadata.json";
+	private static final String KEY_PREFIX = "spring.cloud.deployer.";
 	private ApplicationContext applicationContext;
 
 	@Override
@@ -38,6 +40,11 @@ public class DeployerConfigurationMetadataResolver implements ApplicationContext
 		this.applicationContext = applicationContext;
 	}
 
+	/**
+	 * Resolve all configuration metadata properties prefixed with {@code spring.cloud.deployer.}
+	 *
+	 * @return the list
+	 */
 	public List<ConfigurationMetadataProperty> resolve() {
 		List<ConfigurationMetadataProperty> metadataProperties = new ArrayList<>();
 		ConfigurationMetadataRepositoryJsonBuilder builder = ConfigurationMetadataRepositoryJsonBuilder.create();
@@ -47,19 +54,16 @@ public class DeployerConfigurationMetadataResolver implements ApplicationContext
 				builder.withJsonResource(resource.getInputStream());
 			}
 		}
-		catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		catch (IOException e) {
+			throw new SkipperException("Unable to read configuration metadata", e);
 		}
 		ConfigurationMetadataRepository metadataRepository = builder.build();
 		Map<String, ConfigurationMetadataProperty> properties = metadataRepository.getAllProperties();
 		properties.entrySet().stream().forEach(e -> {
-			if (e.getKey().startsWith("spring.cloud.deployer.")) {
+			if (e.getKey().startsWith(KEY_PREFIX)) {
 				metadataProperties.add(e.getValue());
-				//System.out.println("XXX " + e.getKey() + " " + e.getValue().getId());
 			}
 		});
 		return metadataProperties;
 	}
-
 }

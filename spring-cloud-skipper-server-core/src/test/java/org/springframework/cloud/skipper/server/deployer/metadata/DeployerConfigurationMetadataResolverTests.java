@@ -15,22 +15,27 @@
  */
 package org.springframework.cloud.skipper.server.deployer.metadata;
 
+import java.util.List;
+
 import org.junit.Test;
 
+import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DeployerConfigurationMetadataResolverTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
-	//			.withConfiguration(AutoConfigurations.of(LocalDeployerAutoConfiguration.class));
 
 	@Test
-	public void xxx() {
+	public void testDeployerConfigurationMetadata() {
 		this.contextRunner
 			.run((context) -> {
 				DeployerConfigurationMetadataResolver resolver = new DeployerConfigurationMetadataResolver();
 				resolver.setApplicationContext(context);
-				resolver.resolve();
+				List<ConfigurationMetadataProperty> data = resolver.resolve();
+				assertThat(data.size()).isGreaterThan(0);
 			});
 	}
 }
