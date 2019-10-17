@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the original author or authors.
+ * Copyright 2017-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.cloud.skipper.SkipperException;
 import org.springframework.cloud.skipper.domain.DeleteProperties;
 import org.springframework.cloud.skipper.domain.InstallProperties;
@@ -28,6 +27,7 @@ import org.springframework.cloud.skipper.domain.InstallRequest;
 import org.springframework.cloud.skipper.domain.PackageMetadata;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.domain.RollbackRequest;
+import org.springframework.cloud.skipper.domain.ScaleRequest;
 import org.springframework.cloud.skipper.domain.UpgradeRequest;
 import org.springframework.cloud.skipper.server.deployer.ReleaseAnalysisReport;
 import org.springframework.messaging.Message;
@@ -333,6 +333,21 @@ public class SkipperStateMachineService {
 		UPGRADE_EXIT,
 
 		/**
+		 * Parent state of all scale related states.
+		 */
+		SCALE,
+
+		/**
+		 * State where release scale happens.
+		 */
+		SCALE_SCALE,
+
+		/**
+		 * Pseudostate used as a controlled exit point from {@link #SCALE}.
+		 */
+		SCALE_EXIT,
+
+		/**
 		 * Parent state of all delete related states.
 		 */
 		DELETE,
@@ -481,6 +496,11 @@ public class SkipperStateMachineService {
 		 * SCDF specific extension to allow deletion of
 		 */
 		public static final String RELEASE_DELETE_PROPERTIES = "RELEASE_DELETE_PROPERTIES";
+
+		/**
+		 * Header for {@link ScaleRequest}.
+		 */
+		public static final String SCALE_REQUEST = "SCALE_REQUEST";
 	}
 
 	/**

@@ -15,6 +15,8 @@
  */
 package org.springframework.cloud.skipper.server.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -48,8 +50,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * REST controller for Skipper release related operations.
@@ -140,6 +140,23 @@ public class ReleaseController {
 	public EntityModel<Manifest> manifest(@PathVariable("name") String name,
 			@PathVariable("version") Integer version) {
 		return this.manifestResourceAssembler.toModel(this.releaseService.manifest(name, version));
+	}
+
+	@RequestMapping(path = "/scale/{name}", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.CREATED)
+	public EntityModel<Release> scale(@RequestBody UpgradeRequest upgradeRequest) {
+		// Release release = this.skipperStateMachineService.scaleRelease(scaleRequest);
+		// return this.releaseResourceAssembler.toModel(release);
+		return null;
+	}
+
+	@RequestMapping(path = "/scale/{name}/{appName}", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.CREATED)
+	public EntityModel<Release> scale(@PathVariable("appName") String appName, int desiredCount) {
+		// ScaleRequest scaleRequest = new ScaleRequest();
+		// Release release = this.skipperStateMachineService.scaleRelease(scaleRequest);
+		// return this.releaseResourceAssembler.toModel(release);
+		return null;
 	}
 
 	@RequestMapping(path = "/upgrade", method = RequestMethod.POST)

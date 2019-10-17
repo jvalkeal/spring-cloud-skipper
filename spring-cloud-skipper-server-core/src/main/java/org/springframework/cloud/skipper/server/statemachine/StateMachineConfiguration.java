@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the original author or authors.
+ * Copyright 2017-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package org.springframework.cloud.skipper.server.statemachine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.server.deployer.strategies.HealthCheckProperties;
 import org.springframework.cloud.skipper.server.deployer.strategies.UpgradeStrategyFactory;
@@ -154,6 +153,13 @@ public class StateMachineConfiguration {
 						.stateEntry(SkipperStates.UPGRADE_DELETE_SOURCE_APPS, upgradeDeleteSourceAppsAction())
 						.choice(SkipperStates.UPGRADE_CHECK_CHOICE)
 						.exit(SkipperStates.UPGRADE_EXIT)
+						.and()
+					.withStates()
+						// substates for scale
+						.parent(SkipperStates.SCALE)
+						.initial(SkipperStates.SCALE_SCALE)
+						.stateEntry(SkipperStates.SCALE_SCALE, deleteDeleteAction())
+						.exit(SkipperStates.SCALE_EXIT)
 						.and()
 					.withStates()
 						// substates for delete
@@ -369,6 +375,11 @@ public class StateMachineConfiguration {
 		@Bean
 		public UpgradeDeleteSourceAppsAction upgradeDeleteSourceAppsAction() {
 			return new UpgradeDeleteSourceAppsAction(releaseReportService, upgradeStrategyFactory);
+		}
+
+		@Bean
+		public DeleteDeleteAction scaleScaleAction() {
+			return new DeleteDeleteAction(releaseService);
 		}
 
 		@Bean

@@ -26,7 +26,6 @@ import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.cloud.deployer.spi.app.AppDeployer;
 import org.springframework.cloud.deployer.spi.app.AppInstanceStatus;
 import org.springframework.cloud.deployer.spi.app.AppStatus;
@@ -338,6 +337,29 @@ public class DefaultReleaseManager implements ReleaseManager {
 			logMap.put(deploymentIdEntry.getValue(), appDeployer.getLog(deploymentIdEntry.getValue()));
 		}
 		return new LogInfo(logMap);
+	}
+
+	public void scale(Release release, String appName, int desiredCount) {
+		if (release.getInfo().getStatus().getStatusCode().equals(StatusCode.DELETED)) {
+			return;
+		}
+		AppDeployerData appDeployerData = this.appDeployerDataRepository
+				.findByReleaseNameAndReleaseVersion(release.getName(), release.getVersion());
+		AppDeployer appDeployer = this.deployerRepository.findByNameRequired(release.getPlatformName())
+				.getAppDeployer();
+		Map<String, String> appNameDeploymentIdMap = appDeployerData.getDeploymentDataAsMap();
+
+		Map<String, String> logApps = new HashMap<>();
+		if (StringUtils.hasText(appName)) {
+			for (Map.Entry<String, String> nameDeploymentId : appNameDeploymentIdMap.entrySet()) {
+				if (appName.equalsIgnoreCase(nameDeploymentId.getValue())) {
+					logApps.put(nameDeploymentId.getKey(), nameDeploymentId.getValue());
+				}
+			}
+		}
+		for (Map.Entry<String, String> deploymentIdEntry: logApps.entrySet()) {
+			appDeployer.scale(deploymentIdEntry.getKey(), desiredCount);
+		}
 	}
 
 	public Release delete(Release release) {
