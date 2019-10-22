@@ -261,7 +261,7 @@ public class ReleaseCommands extends AbstractSkipperCommand {
 	public Table history(
 			@ShellOption(help = "wildcard expression to search by release name") @NotNull String releaseName) {
 		Collection<Release> releases;
-		releases = this.skipperClient.history(releaseName).getContent();
+		releases = this.skipperClient.history(releaseName);
 		LinkedHashMap<String, Object> headers = new LinkedHashMap<>();
 		headers.put("version", "Version");
 		headers.put("info.lastDeployed", "Last updated");

@@ -15,13 +15,13 @@
  */
 package org.springframework.cloud.skipper.shell.command;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.client.SkipperClient;
 import org.springframework.cloud.skipper.domain.Deployer;
 import org.springframework.cloud.skipper.shell.command.support.TableUtils;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.table.BeanListTableModel;
@@ -45,12 +45,12 @@ public class PlatformCommands extends AbstractSkipperCommand {
 
 	@ShellMethod(key = "platform list", value = "List platforms")
 	public Table list() {
-		CollectionModel<Deployer> repositoryResources = this.skipperClient.listDeployers();
+		Collection<Deployer> repositoryResources = this.skipperClient.listDeployers();
 		LinkedHashMap<String, Object> headers = new LinkedHashMap<>();
 		headers.put("name", "Name");
 		headers.put("type", "Type");
 		headers.put("description", "Description");
-		TableModel model = new BeanListTableModel<>(repositoryResources.getContent(), headers);
+		TableModel model = new BeanListTableModel<>(repositoryResources, headers);
 		TableBuilder tableBuilder = new TableBuilder(model);
 		return TableUtils.applyStyle(tableBuilder).build();
 	}
