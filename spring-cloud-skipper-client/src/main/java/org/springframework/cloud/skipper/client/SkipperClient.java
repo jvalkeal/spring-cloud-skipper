@@ -17,6 +17,7 @@ package org.springframework.cloud.skipper.client;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.cloud.skipper.domain.AboutResource;
 import org.springframework.cloud.skipper.domain.CancelRequest;
@@ -166,6 +167,8 @@ public interface SkipperClient {
 	 * @return the status info of a release
 	 */
 	Info status(String releaseName);
+
+	Map<String, Info> statuses(String... releaseName);
 
 	/**
 	 * Return a status info of a release version.

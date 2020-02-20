@@ -16,6 +16,7 @@
 package org.springframework.cloud.skipper.server.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.skipper.PackageDeleteException;
@@ -47,8 +48,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -105,6 +110,20 @@ public class ReleaseController {
 	}
 
 	// Release commands
+
+	@RequestMapping(path = "/statuses", method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public Mono<Map<String, Info>> statuses(@RequestParam("names") String[] names) {
+		return this.releaseService.statusReactive(names);
+	}
+
+	// @RequestMapping(path = "/statuses", method = RequestMethod.GET)
+	// @ResponseStatus(HttpStatus.OK)
+	// public Flux<EntityModel<Info>> statuses(@RequestParam("names") String[] names) {
+	// 	return this.releaseService.statusReactive(names)
+	// 		.map(info -> this.infoResourceAssembler.toModel(info))
+	// 		;
+	// }
 
 	@RequestMapping(path = "/status/{name}", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)

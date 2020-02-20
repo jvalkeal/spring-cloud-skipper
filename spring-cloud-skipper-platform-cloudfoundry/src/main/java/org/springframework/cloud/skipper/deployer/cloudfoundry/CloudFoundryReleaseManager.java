@@ -45,6 +45,8 @@ import org.springframework.cloud.skipper.server.util.ArgumentSanitizer;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import reactor.core.publisher.Mono;
+
 /**
  * A ReleaseManager implementation that uses an CF manifest based deployer.
  *
@@ -157,6 +159,12 @@ public class CloudFoundryReleaseManager implements ReleaseManager {
 		release.getInfo().getStatus().setPlatformStatusAsAppStatusList(
 				Collections.singletonList(this.cfManifestApplicationDeployer.status(release)));
 		return release;
+	}
+
+	@Override
+	public Mono<Release> statusReactive(Release release) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public Release delete(Release release) {

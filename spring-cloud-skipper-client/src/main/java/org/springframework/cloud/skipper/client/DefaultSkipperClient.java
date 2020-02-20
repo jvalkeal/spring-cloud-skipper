@@ -139,6 +139,22 @@ public class DefaultSkipperClient implements SkipperClient {
 	}
 
 	@Override
+	public Map<String, Info> statuses(String... releaseName) {
+		ParameterizedTypeReference<Map<String, Info>> typeReference =
+			new ParameterizedTypeReference<Map<String, Info>>() { };
+
+		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUri + "/release/statuses");
+		builder.queryParam("names", StringUtils.arrayToCommaDelimitedString(releaseName));
+
+		ResponseEntity<Map<String, Info>> responseEntity =
+				restTemplate.exchange(builder.toUriString(),
+						HttpMethod.GET,
+						null,
+						typeReference);
+		return responseEntity.getBody();
+	}
+
+	@Override
 	public Info status(String releaseName, int releaseVersion) {
 		ParameterizedTypeReference<Info> typeReference =
 				new ParameterizedTypeReference<Info>() { };

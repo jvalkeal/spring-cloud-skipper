@@ -58,6 +58,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
 /**
  * A ReleaseManager implementation that uses an AppDeployer and CF manifest based deployer.
  *
@@ -238,6 +241,65 @@ public class DefaultReleaseManager implements ReleaseManager {
 		deploymentPropertiesMap.put(SPRING_CLOUD_DEPLOYER_COUNT, appsCount);
 	}
 
+	public Mono<Release> statusReactive(Release release) {
+		logger.info("WWW1 statux {}", release);
+		return Mono.defer(() -> {
+			if (release.getInfo().getStatus().getStatusCode().equals(StatusCode.DELETED)) {
+				logger.info("WWW2 statux");
+				return Mono.just(release);
+			}
+			AppDeployer appDeployer = this.deployerRepository.findByNameRequired(release.getPlatformName()).getAppDeployer();
+
+			AppDeployerData appDeployerData = this.appDeployerDataRepository
+				.findByReleaseNameAndReleaseVersion(release.getName(), release.getVersion());
+			if (appDeployerData == null) {
+				logger.warn(String.format("Could not get status for release %s-v%s.  No app deployer data found.",
+					release.getName(), release.getVersion()));
+				logger.info("WWW3 statux");
+				return Mono.just(release);
+			}
+			List<String> deploymentIds = appDeployerData.getDeploymentIds();
+			logger.info("WWW Getting status for {} using deploymentIds {}", release,
+					StringUtils.collectionToCommaDelimitedString(deploymentIds));
+
+			if (!deploymentIds.isEmpty()) {
+				logger.info("WWW51 statux");
+				Map<String, String> appNameDeploymentIdMap = appDeployerData.getDeploymentDataAsMap();
+				logger.info("WWW52 statux {}", appNameDeploymentIdMap);
+				return Flux.fromIterable(appNameDeploymentIdMap.entrySet())
+					.flatMap(nameDeploymentId -> {
+						String appName = nameDeploymentId.getKey();
+						String deploymentId = nameDeploymentId.getValue();
+						Mono<AppStatus> statusx = appDeployer.statusReactive(deploymentId);
+						logger.info("WWW53 statux {}", statusx);
+						return statusx;
+					})
+					.map(appStatus -> copyStatus(appStatus))
+					.map(appStatus -> {
+						Collection<AppInstanceStatus> instanceStatuses = appStatus.getInstances().values();
+						for (AppInstanceStatus instanceStatus : instanceStatuses) {
+							// instanceStatus.getAttributes().put(SKIPPER_APPLICATION_NAME_ATTRIBUTE, appName);
+							instanceStatus.getAttributes().put(SKIPPER_APPLICATION_NAME_ATTRIBUTE, appStatus.getDeploymentId());
+							instanceStatus.getAttributes().put(SKIPPER_RELEASE_NAME_ATTRIBUTE, release.getName());
+							instanceStatus.getAttributes().put(SKIPPER_RELEASE_VERSION_ATTRIBUTE, "" + release.getVersion());
+						}
+						return appStatus;
+					})
+					.collectList()
+					.map(appStatusList -> {
+						release.getInfo().getStatus().setPlatformStatusAsAppStatusList(appStatusList);
+						logger.info("WWW6 statux {}", release);
+						return release;
+					})
+					;
+			}
+
+			logger.info("WWW4 statux");
+			return Mono.just(release);
+		});
+	}
+
+
 	public Release status(Release release) {
 		if (release.getInfo().getStatus().getStatusCode().equals(StatusCode.DELETED)) {
 			return release;
@@ -263,17 +325,22 @@ public class DefaultReleaseManager implements ReleaseManager {
 			int unknownCount = 0;
 			Map<String, DeploymentState> deploymentStateMap = new HashMap<>();
 			if (appDeployer instanceof MultiStateAppDeployer) {
-				MultiStateAppDeployer multiStateAppDeployer = (MultiStateAppDeployer) appDeployer;
-				deploymentStateMap = multiStateAppDeployer.states(StringUtils.toStringArray(deploymentIds));
+				// MultiStateAppDeployer multiStateAppDeployer = (MultiStateAppDeployer) appDeployer;
+				// logger.info("XXX calling multiStateAppDeployer start {}", deploymentIds);
+				// deploymentStateMap = multiStateAppDeployer.states(StringUtils.toStringArray(deploymentIds));
+				// logger.info("XXX calling multiStateAppDeployer end {}", deploymentIds);
 			}
 			List<AppStatus> appStatusList = new ArrayList<>();
 			// Key = app name, value = deploymentId
 			Map<String, String> appNameDeploymentIdMap = appDeployerData.getDeploymentDataAsMap();
+
 			for (Map.Entry<String, String> nameDeploymentId : appNameDeploymentIdMap.entrySet()) {
 				String appName = nameDeploymentId.getKey();
 				String deploymentId = nameDeploymentId.getValue();
 				// Copy the status to allow instance attribute mutation.
+				logger.info("XXX calling appDeployer start {}", deploymentId);
 				AppStatus appStatus = copyStatus(appDeployer.status(deploymentId));
+				logger.info("XXX calling appDeployer end {}", deploymentId);
 				Collection<AppInstanceStatus> instanceStatuses = appStatus.getInstances().values();
 				for (AppInstanceStatus instanceStatus : instanceStatuses) {
 					instanceStatus.getAttributes().put(SKIPPER_APPLICATION_NAME_ATTRIBUTE, appName);

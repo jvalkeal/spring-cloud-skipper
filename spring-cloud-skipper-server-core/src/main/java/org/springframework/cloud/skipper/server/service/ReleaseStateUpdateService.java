@@ -48,6 +48,8 @@ public class ReleaseStateUpdateService {
 
 	private long nextFullPoll;
 
+	private boolean initialPoll = true;
+
 	/**
 	 * Instantiates a new release state update service.
 	 *
@@ -64,7 +66,8 @@ public class ReleaseStateUpdateService {
 		log.info("Setting up ReleaseStateUpdateService");
 	}
 
-	@Scheduled(initialDelay = 5000, fixedRate = 5000)
+	// @Scheduled(initialDelay = 5000, fixedRate = 5000)
+	@Scheduled(initialDelay = 10000, fixedRate = 300000)
 	@Transactional
 	public synchronized void update() {
 		log.debug("Scheduled update state method running...");
@@ -75,6 +78,12 @@ public class ReleaseStateUpdateService {
 			this.nextFullPoll = getNextFullPoll();
 			log.debug("Setup next full poll at {}", new Date(this.nextFullPoll));
 		}
+
+		boolean doInitialPoll = initialPoll;
+		if (initialPoll) {
+			initialPoll = false;
+		}
+
 		Iterable<Release> releases = this.releaseRepository.findLatestDeployedOrFailed();
 		for (Release release : releases) {
 			String kind = ManifestUtils.resolveKind(release.getManifest().getData());
@@ -85,8 +94,8 @@ public class ReleaseStateUpdateService {
 				// poll new apps every time or we do full poll anyway
 				boolean isNewApp = (info.getLastDeployed().getTime() > (now - 120000));
 				log.debug("Considering updating state for {}-v{}", release.getName(), release.getVersion());
-				log.debug("fullPoll = {}, isNewApp = {}", fullPoll, isNewApp);
-				boolean poll = fullPoll || (isNewApp);
+				log.debug("fullPoll = {}, isNewApp = {}, doInitialPoll = {}", fullPoll, isNewApp, doInitialPoll);
+				boolean poll = fullPoll || (isNewApp) || doInitialPoll;
 				if (poll) {
 					try {
 						release = releaseManager.status(release);

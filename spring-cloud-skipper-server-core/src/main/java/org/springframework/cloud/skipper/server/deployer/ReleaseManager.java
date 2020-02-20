@@ -22,6 +22,8 @@ import org.springframework.cloud.skipper.domain.LogInfo;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.domain.ScaleRequest;
 
+import reactor.core.publisher.Mono;
+
 /**
  * Manages the lifecycle of a releases.
  *
@@ -76,6 +78,8 @@ public interface ReleaseManager {
 	 * @return the updated release
 	 */
 	Release status(Release release);
+
+	Mono<Release> statusReactive(Release release);
 
 	/**
 	 * Get the logs of the applications inside the release.
