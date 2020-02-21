@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,7 @@ public class ReleaseStateUpdateService {
 		log.info("Setting up ReleaseStateUpdateService");
 	}
 
-	// @Scheduled(initialDelay = 5000, fixedRate = 5000)
-	@Scheduled(initialDelay = 10000, fixedRate = 300000)
+	@Scheduled(initialDelay = 5000, fixedRate = 5000)
 	@Transactional
 	public synchronized void update() {
 		log.debug("Scheduled update state method running...");
@@ -81,6 +80,7 @@ public class ReleaseStateUpdateService {
 
 		boolean doInitialPoll = initialPoll;
 		if (initialPoll) {
+			log.debug("Looks like first invocation, forcing polling as initialPoll");
 			initialPoll = false;
 		}
 

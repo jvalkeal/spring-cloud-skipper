@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,12 +139,12 @@ public class DefaultSkipperClient implements SkipperClient {
 	}
 
 	@Override
-	public Map<String, Info> statuses(String... releaseName) {
+	public Map<String, Info> statuses(String... releaseNames) {
 		ParameterizedTypeReference<Map<String, Info>> typeReference =
 			new ParameterizedTypeReference<Map<String, Info>>() { };
 
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUri + "/release/statuses");
-		builder.queryParam("names", StringUtils.arrayToCommaDelimitedString(releaseName));
+		builder.queryParam("names", StringUtils.arrayToCommaDelimitedString(releaseNames));
 
 		ResponseEntity<Map<String, Info>> responseEntity =
 				restTemplate.exchange(builder.toUriString(),

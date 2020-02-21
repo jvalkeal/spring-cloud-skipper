@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -116,14 +115,6 @@ public class ReleaseController {
 	public Mono<Map<String, Info>> statuses(@RequestParam("names") String[] names) {
 		return this.releaseService.statusReactive(names);
 	}
-
-	// @RequestMapping(path = "/statuses", method = RequestMethod.GET)
-	// @ResponseStatus(HttpStatus.OK)
-	// public Flux<EntityModel<Info>> statuses(@RequestParam("names") String[] names) {
-	// 	return this.releaseService.statusReactive(names)
-	// 		.map(info -> this.infoResourceAssembler.toModel(info))
-	// 		;
-	// }
 
 	@RequestMapping(path = "/status/{name}", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)

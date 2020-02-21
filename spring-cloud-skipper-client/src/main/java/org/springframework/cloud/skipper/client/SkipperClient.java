@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,7 +168,13 @@ public interface SkipperClient {
 	 */
 	Info status(String releaseName);
 
-	Map<String, Info> statuses(String... releaseName);
+	/**
+	 * Return a status info of a last known releases mapped back to release names.
+	 *
+	 * @param releaseNames the release names
+	 * @return the status info of a releases
+	 */
+	Map<String, Info> statuses(String... releaseNames);
 
 	/**
 	 * Return a status info of a release version.

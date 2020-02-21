@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,6 @@ import org.springframework.util.StringUtils;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 /**
  * Service responsible for the lifecycle of packages and releases, install/delete a
@@ -246,6 +245,13 @@ public class ReleaseService {
 		return releaseManager.delete(releaseToDelete);
 	}
 
+	/**
+	 * Return the current statuses of the releases.
+	 *
+	 * @param releaseName the name of the release
+	 * @return The latest state of the release as stored in the database
+	 */
+	@Transactional
 	public Mono<Map<String, Info>> statusReactive(String[] releaseNames) {
 		return Flux.fromArray(releaseNames)
 			.flatMap(releaseName -> {
@@ -257,29 +263,8 @@ public class ReleaseService {
 				ReleaseManager releaseManager = this.releaseManagerFactory.getReleaseManager(kind);
 				return releaseManager.statusReactive(release);
 			})
-			.collectMap(release -> release.getName(), release -> release.getInfo())
-			;
-
+			.collectMap(release -> release.getName(), release -> release.getInfo());
 	}
-
-	// public Flux<Info> statusReactive(String[] releaseNames) {
-	// 	return Flux.fromArray(releaseNames)
-	// 		// .parallel()
-	// 		// .runOn(Schedulers.parallel())
-	// 		.flatMap(releaseName -> {
-	// 			Release release = this.releaseRepository.findTopByNameOrderByVersionDesc(releaseName);
-	// 			return Mono.justOrEmpty(release);
-	// 		})
-	// 		.flatMap(release -> {
-	// 			String kind = ManifestUtils.resolveKind(release.getManifest().getData());
-	// 			ReleaseManager releaseManager = this.releaseManagerFactory.getReleaseManager(kind);
-	// 			return releaseManager.statusReactive(release);
-	// 		})
-	// 		.flatMap(release -> Mono.justOrEmpty(release.getInfo()))
-	// 		// .sequential()
-	// 		;
-	// }
-
 
 	/**
 	 * Return the current status of the release
