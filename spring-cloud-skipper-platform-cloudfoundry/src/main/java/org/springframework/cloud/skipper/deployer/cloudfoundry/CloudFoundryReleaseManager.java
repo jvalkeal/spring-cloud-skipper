@@ -167,6 +167,12 @@ public class CloudFoundryReleaseManager implements ReleaseManager {
 	}
 
 	@Override
+	public Mono<Map<String, Map<String, DeploymentState>>> deploymentStatex(List<Release> releases) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public Mono<Release> statusReactive(Release release) {
 		// TODO: should convert to full reactive chain
 		return Mono.defer(() -> Mono.just(status(release)));
