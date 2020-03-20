@@ -58,11 +58,6 @@ public class SkipperOAuthSecurityConfiguration extends OAuthSecurityConfiguratio
 			http.addFilter(basicAuthenticationFilter);
 		}
 
-
-		// final BasicAuthenticationFilter basicAuthenticationFilter = new BasicAuthenticationFilter(
-		// 		providerManager(), basicAuthenticationEntryPoint);
-
-		// http.addFilter(basicAuthenticationFilter);
 		this.authorizationProperties.getAuthenticatedPaths().add(dashboard("/**"));
 		this.authorizationProperties.getAuthenticatedPaths().add(dashboard(""));
 
@@ -93,12 +88,6 @@ public class SkipperOAuthSecurityConfiguration extends OAuthSecurityConfiguratio
 				.jwt()
 					.jwtAuthenticationConverter(grantedAuthoritiesExtractor());
 		}
-
-		// http.oauth2ResourceServer()
-		// 	// .opaqueToken().introspector(opaqueTokenIntrospector())
-		// 	.jwt()
-		// 		.jwtAuthenticationConverter(grantedAuthoritiesExtractor())
-		// 	;
 
 		this.securityStateBean.setAuthenticationEnabled(true);
 	}
