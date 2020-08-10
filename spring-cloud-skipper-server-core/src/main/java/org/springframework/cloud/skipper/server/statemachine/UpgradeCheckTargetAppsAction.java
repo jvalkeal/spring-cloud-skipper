@@ -62,12 +62,13 @@ public class UpgradeCheckTargetAppsAction extends AbstractUpgradeStartAction {
 		UpgradeStrategy upgradeStrategy = this.upgradeStrategyFactory.getUpgradeStrategy(kind);
 		boolean ok = upgradeStrategy.checkStatus(releaseAnalysisReport.getReplacingRelease());
 		log.debug("upgradeStrategy checkStatus {}", ok);
-		if (ok) {
-			upgradeStatus = 1;
-		}
-		else if (!ok && cutOffTimeExceed(context)) {
-			upgradeStatus = -1;
-		}
+		upgradeStatus = -1;
+		// if (ok) {
+		// 	upgradeStatus = 1;
+		// }
+		// else if (!ok && cutOffTimeExceed(context)) {
+		// 	upgradeStatus = -1;
+		// }
 		log.debug("Setting upgradeStatus {}", upgradeStatus);
 		context.getExtendedState().getVariables().put(SkipperVariables.UPGRADE_STATUS, upgradeStatus);
 	}
@@ -79,7 +80,7 @@ public class UpgradeCheckTargetAppsAction extends AbstractUpgradeStartAction {
 			// missing cutoff, indicate exceed
 			return true;
 		}
-		log.debug("Testing cutOffTime {} to now {}", cutOffTime, now);
+		log.debug("Testing cutOffTime {} to now {} diff {}", cutOffTime, now, cutOffTime - now);
 		return now > cutOffTime;
 	}
 }
