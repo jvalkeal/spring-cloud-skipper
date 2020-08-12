@@ -107,9 +107,10 @@ public class HandleHealthCheckStep {
 			// ReleaseManager releaseManager = this.releaseManagerFactory.getReleaseManager(kind);
 			// releaseManager.delete(replacingRelease);
 			Status status = new Status();
-			status.setStatusCode(StatusCode.FAILED);
+			// status.setStatusCode(StatusCode.FAILED);
+			status.setStatusCode(StatusCode.CANCELLED);
 			replacingRelease.getInfo().setStatus(status);
-			replacingRelease.getInfo().setStatus(status);
+			// replacingRelease.getInfo().setStatus(status);
 			String desc = cancel ? "Cancelled after " + timeout + " ms."
 					: "Did not detect apps in replacing release as healthy after " + timeout + " ms.";
 			replacingRelease.getInfo()

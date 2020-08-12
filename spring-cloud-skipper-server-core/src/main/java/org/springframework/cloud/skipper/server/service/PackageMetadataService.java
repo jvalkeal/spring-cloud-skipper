@@ -103,6 +103,9 @@ public class PackageMetadataService implements ResourceLoaderAware {
 			// Only keep latest release per release name.
 			Map<String, Release> latestReleaseMap = new HashMap<>();
 			for (Release release : releasesFromLocalRepositories) {
+				if (release.getInfo().getStatus().getStatusCode() == StatusCode.CANCELLED) {
+					continue;
+				}
 				if (!latestReleaseMap.containsKey(release.getName())) {
 					latestReleaseMap.put(release.getName(), release);
 				}
