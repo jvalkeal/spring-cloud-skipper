@@ -35,8 +35,8 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
-import org.springframework.cloud.common.security.AuthorizationProperties;
-import org.springframework.cloud.common.security.support.SecurityStateBean;
+import org.springframework.cloud.dataflow.common.security.AuthorizationProperties;
+import org.springframework.cloud.dataflow.common.security.SecurityState;
 import org.springframework.cloud.deployer.autoconfigure.ResourceLoadingAutoConfiguration;
 import org.springframework.cloud.deployer.resource.docker.DockerResourceLoader;
 import org.springframework.cloud.deployer.resource.maven.MavenProperties;
@@ -319,8 +319,8 @@ public class ServerDependencies implements AsyncConfigurer {
 	}
 
 	@Bean
-	public SecurityStateBean securityStateBean() {
-		return new SecurityStateBean();
+	public SecurityState securityState() {
+		return new SecurityState();
 	}
 
 	@Bean

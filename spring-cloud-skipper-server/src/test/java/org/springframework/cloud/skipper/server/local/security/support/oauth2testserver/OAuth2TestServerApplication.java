@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfigurati
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration;
-import org.springframework.cloud.common.security.CommonSecurityAutoConfiguration;
+// import org.springframework.cloud.common.security.CommonSecurityAutoConfiguration;
 import org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeployerAutoConfiguration;
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesAutoConfiguration;
 import org.springframework.cloud.deployer.spi.local.LocalDeployerAutoConfiguration;
@@ -48,36 +48,36 @@ import org.springframework.statemachine.boot.autoconfigure.StateMachineJpaReposi
  * @author Gunnar Hillert
  *
  */
-@EnableResourceServer
-@EnableConfigurationProperties({FileSecurityProperties.class})
-@SpringBootApplication(
-		excludeName = {
-				"org.springframework.cloud.dataflow.shell.autoconfigure.BaseShellAutoConfiguration" },
-		exclude = {
-				ServiceRegistryAutoConfiguration.class,
-				JpaRepositoriesAutoConfiguration.class,
-				CommonSecurityAutoConfiguration.class,
-				SessionAutoConfiguration.class,
-				ManagementWebSecurityAutoConfiguration.class,
-				LocalDeployerAutoConfiguration.class,
-				CloudFoundryDeployerAutoConfiguration.class,
-				KubernetesAutoConfiguration.class,
-				org.springframework.cloud.kubernetes.KubernetesAutoConfiguration.class,
-				DataSourceAutoConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class,
-				JmxAutoConfiguration.class,
-				FlywayAutoConfiguration.class,
-				SpringDataWebAutoConfiguration.class,
-				StateMachineJpaRepositoriesAutoConfiguration.class,
-				TaskExecutionAutoConfiguration.class,
-				TaskSchedulingAutoConfiguration.class,
-				FlywayEndpointAutoConfiguration.class,
-				RepositoryRestMvcAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
-				LocalDeployerAutoConfiguration.class,
-				StateMachineAutoConfiguration.class,
-				SkipperServerAutoConfiguration.class,
-				IntegrationAutoConfiguration.class })
+// @EnableResourceServer
+// @EnableConfigurationProperties({FileSecurityProperties.class})
+// @SpringBootApplication(
+// 		excludeName = {
+// 				"org.springframework.cloud.dataflow.shell.autoconfigure.BaseShellAutoConfiguration" },
+// 		exclude = {
+// 				ServiceRegistryAutoConfiguration.class,
+// 				JpaRepositoriesAutoConfiguration.class,
+// 				CommonSecurityAutoConfiguration.class,
+// 				SessionAutoConfiguration.class,
+// 				ManagementWebSecurityAutoConfiguration.class,
+// 				LocalDeployerAutoConfiguration.class,
+// 				CloudFoundryDeployerAutoConfiguration.class,
+// 				KubernetesAutoConfiguration.class,
+// 				org.springframework.cloud.kubernetes.KubernetesAutoConfiguration.class,
+// 				DataSourceAutoConfiguration.class,
+// 				DataSourceTransactionManagerAutoConfiguration.class,
+// 				JmxAutoConfiguration.class,
+// 				FlywayAutoConfiguration.class,
+// 				SpringDataWebAutoConfiguration.class,
+// 				StateMachineJpaRepositoriesAutoConfiguration.class,
+// 				TaskExecutionAutoConfiguration.class,
+// 				TaskSchedulingAutoConfiguration.class,
+// 				FlywayEndpointAutoConfiguration.class,
+// 				RepositoryRestMvcAutoConfiguration.class,
+// 				HibernateJpaAutoConfiguration.class,
+// 				LocalDeployerAutoConfiguration.class,
+// 				StateMachineAutoConfiguration.class,
+// 				SkipperServerAutoConfiguration.class,
+// 				IntegrationAutoConfiguration.class })
 public class OAuth2TestServerApplication {
 
 	public static void main(String[] args) {
